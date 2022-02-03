@@ -300,5 +300,17 @@ AFRAME.registerComponent("text", {
       geometry.boundingBox = null;
       geometry.boundingSphere = null;
     };
+  })(),
+
+  getSize: (function() {
+    const size = new THREE.Vector3();
+    return function() {
+      if (this.geometry) {
+        this.geometry.computeBoundingBox();
+        this.geometry.boundingBox.getSize(size);
+        this.geometry.boundingBox = null;
+        return new THREE.Vector3(size.x * this.mesh.scale.x, size.y * this.mesh.scale.y, size.z * this.mesh.scale.z);
+      }
+    };
   })()
 });
