@@ -274,6 +274,8 @@ AFRAME.registerComponent("text", {
     mesh.position.z = data.zOffset;
     mesh.scale.set(textScale, -1 * textScale, textScale);
     mesh.matrixNeedsUpdate = true;
+
+    this.el.emit("text-updated", this);
   },
 
   /**
