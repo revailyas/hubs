@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import classNames from "classnames";
 import styles from "./RoomLayout.scss";
 import { Toolbar } from "./Toolbar";
+import LibraryUI from "../../integrations/ui/LibraryUI";
 
 export function RoomLayout({
   className,
@@ -38,6 +39,8 @@ export function RoomLayout({
       >
         {viewport}
       </div>
+
+      <LibraryUI />
     </div>
   );
 }

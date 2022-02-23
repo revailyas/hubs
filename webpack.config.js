@@ -183,7 +183,8 @@ async function fetchAppConfigAndEnvironmentVars() {
 
   process.env.RETICULUM_SERVER = host;
   process.env.SHORTLINK_DOMAIN = shortlink_domain;
-  process.env.CORS_PROXY_SERVER = `${localIp}:8080/cors-proxy`;
+  process.env.CORS_PROXY_SERVER = `assemblr-cors-anywhere.ap-southeast-1.elasticbeanstalk.com/`;
+  //process.env.CORS_PROXY_SERVER = `cors-anywhere.herokuapp.com`;
   process.env.THUMBNAIL_SERVER = thumbnail_server;
   process.env.NON_CORS_PROXY_DOMAINS = `${localIp},hubs.local,localhost`;
 

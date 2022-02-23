@@ -6,7 +6,8 @@ import qsTruthy from "../utils/qs_truthy";
 import { isTagged } from "../components/tags";
 import { qsGet } from "../utils/qs_truthy";
 const customFOV = qsGet("fov");
-const enableThirdPersonMode = qsTruthy("thirdPerson");
+//const enableThirdPersonMode = qsTruthy("thirdPerson");
+const enableThirdPersonMode = true;
 import { Layers } from "../components/layers";
 
 function getInspectableInHierarchy(el) {
@@ -246,9 +247,9 @@ export class CameraSystem {
       return;
     }
 
-    if (!enableThirdPersonMode) return;
+    //if (!enableThirdPersonMode) return;
     if (this.mode === CAMERA_MODE_SCENE_PREVIEW) return;
-
+    console.log({ enableThirdPersonMode });
     this.mode = NEXT_MODES[this.mode] || 0;
   }
 

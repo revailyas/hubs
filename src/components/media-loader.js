@@ -24,6 +24,7 @@ import { cloneObject3D, setMatrixWorld } from "../utils/three-utils";
 import { waitForDOMContentLoaded } from "../utils/async-utils";
 
 import { SHAPE } from "three-ammo/constants";
+import { loadBLRFileByURL } from "../integrations/blr";
 
 let loadingObject;
 
@@ -70,11 +71,12 @@ AFRAME.registerComponent("media-loader", {
     this.handleLinkedElRemoved = this.handleLinkedElRemoved.bind(this);
     this.refresh = this.refresh.bind(this);
     this.animating = false;
-
+    console.log({ context: this });
     try {
       NAF.utils
         .getNetworkedEntity(this.el)
         .then(networkedEl => {
+          console.log({ networkedEl });
           this.networkedEl = networkedEl;
         })
         .catch(() => {}); //ignore exception, entity might not be networked
@@ -411,6 +413,8 @@ AFRAME.registerComponent("media-loader", {
         this.el.emit("media_refreshed", { src, raw: accessibleUrl, contentType });
       }
 
+      console.log({ contentType });
+
       if (
         contentType.startsWith("video/") ||
         contentType.startsWith("audio/") ||
@@ -537,6 +541,7 @@ AFRAME.registerComponent("media-loader", {
         contentType.includes("x-zip-compressed") ||
         contentType.startsWith("model/gltf")
       ) {
+        console.log({ datas: this.data });
         this.el.removeAttribute("media-image");
         this.el.removeAttribute("media-video");
         this.el.removeAttribute("audio-zone-source");
@@ -618,6 +623,38 @@ AFRAME.registerComponent("media-loader", {
         if (this.el.components["position-at-border__freeze-unprivileged"]) {
           this.el.setAttribute("position-at-border__freeze-unprivileged", { isFlat: true });
         }
+      } else if (contentType === "binary/octet-stream") {
+        console.log("load blr object");
+        const model = await loadBLRFileByURL(src);
+        this.el.addEventListener(
+          "model-loaded",
+          () => {
+            this.onMediaLoaded(SHAPE.HULL, true);
+            addAnimationComponents(this.el);
+          },
+          { once: true }
+        );
+        this.el.addEventListener("model-error", this.onError, { once: true });
+        let batch = !disableBatching && forceMeshBatching;
+        if (this.data.mediaOptions.hasOwnProperty("batch") && !this.data.mediaOptions.batch) {
+          batch = false;
+        }
+        if (this.data.mediaOptions.hasOwnProperty("applyGravity")) {
+          this.el.setAttribute("floaty-object", {
+            modifyGravityOnRelease: !this.data.mediaOptions.applyGravity
+          });
+        }
+        this.el.setAttribute(
+          "gltf-model-plus",
+          Object.assign({}, this.data.mediaOptions, {
+            src: null,
+            customModel: model,
+            contentType: contentType,
+            inflate: true,
+            batch,
+            modelToWorldScale: this.data.fitToBox ? 0.0001 : 1.0
+          })
+        );
       } else {
         throw new Error(`Unsupported content type: ${contentType}`);
       }

@@ -13,6 +13,14 @@ import { PlacePopoverButton } from "./PlacePopover";
 import { ObjectUrlModalContainer } from "./ObjectUrlModalContainer";
 import configs from "../../utils/configs";
 import { FormattedMessage } from "react-intl";
+import { SHAPE, FIT } from "three-ammo/constants";
+
+//REVA
+import * as THREE from "three";
+import { addMedia } from "../../utils/media-utils";
+import { loadBLRFile } from "../../integrations/blr";
+import { addAnimationComponents } from "../../utils/animation";
+import { blrInfoExtractor } from "../../integrations/blr";
 
 export function PlacePopoverContainer({ scene, mediaSearchStore, showNonHistoriedDialog, hubChannel }) {
   const [items, setItems] = useState([]);
@@ -55,13 +63,34 @@ export function PlacePopoverContainer({ scene, mediaSearchStore, showNonHistorie
               label: <FormattedMessage id="place-popover.item-type.gif" defaultMessage="GIF" />,
               onSelect: () => mediaSearchStore.sourceNavigate("gifs")
             },
-            configs.integration("sketchfab") && {
-              id: "model",
-              icon: ObjectIcon,
-              color: "accent2",
-              label: <FormattedMessage id="place-popover.item-type.model" defaultMessage="3D Model" />,
-              onSelect: () => mediaSearchStore.sourceNavigate("sketchfab")
-            },
+            // configs.integration("sketchfab") && {
+            //   id: "model",
+            //   icon: ObjectIcon,
+            //   color: "accent2",
+            //   label: <FormattedMessage id="place-popover.item-type.model" defaultMessage="3D Model" />,
+            //   onSelect: () => mediaSearchStore.sourceNavigate("sketchfab")
+            // },
+            // {
+            //   id: "assemblr_library",
+            //   icon: ObjectIcon,
+            //   color: "accent1",
+            //   label: <FormattedMessage id="place-popover.item-type.library" defaultMessage="Assemblr Library" />,
+            //   onSelect: async () => {
+            //     console.log("nambah object");
+
+            //     // const blrID = "2_i04d6VDV1CelwzZw5MYMAn6DLQd2_1_blrf-BlackFootedFerret";
+            //     // const blrPath = blrInfoExtractor(blrID);
+
+            //     // const { entity } = addMedia(blrPath, "#interactable-media", 1);
+            //     // entity.setAttribute("offset-relative-to", {
+            //     //   target: "#avatar-pov-node",
+            //     //   offset: { x: 0, y: 0, z: -1.5 }
+            //     // });
+            //     const libraryContainer = document.getElementById("library-ui-container");
+            //     libraryContainer.classList.remove("hidden");
+            //     console.log(libraryContainer);
+            //   }
+            // },
             {
               id: "avatar",
               icon: AvatarIcon,

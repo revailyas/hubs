@@ -25,6 +25,7 @@ import loadingEnvironment from "./assets/models/LoadingEnvironment.glb";
 
 import "aframe";
 import "./utils/aframe-overrides";
+import executeOnetime from "./integrations/functions/executeOnetime.js";
 
 // A-Frame hardcodes THREE.Cache.enabled = true
 // But we don't want to use THREE.Cache because
@@ -255,6 +256,8 @@ import { OAuthScreenContainer } from "./react-components/auth/OAuthScreenContain
 import { SignInMessages } from "./react-components/auth/SignInModal";
 import { ThemeProvider } from "./react-components/styles/theme";
 import { LogMessageType } from "./react-components/room/ChatSidebar";
+import { blrInfoExtractor } from "./integrations/blr";
+import { addMedia } from "./utils/media-utils";
 
 const PHOENIX_RELIABLE_NAF = "phx-reliable";
 NAF.options.firstSyncSource = PHOENIX_RELIABLE_NAF;
@@ -323,6 +326,32 @@ window.APP.history = history;
 const qsVREntryType = qs.get("vr_entry_type");
 
 function mountUI(props = {}) {
+  console.log("Hub opened");
+  window.addEventListener("message", e => {
+    const event = e.data;
+    if (e.data.id === "webplayer editor") {
+      const func = function() {
+        const param = e.data.data;
+        if (param !== "close drawer") {
+          console.log({ param });
+
+          const blrID = param.blrpath;
+          const blrPath = blrInfoExtractor(blrID);
+
+          const { entity } = addMedia(blrPath, "#interactable-media", 1);
+          entity.setAttribute("offset-relative-to", {
+            target: "#avatar-pov-node",
+            offset: { x: 0, y: 0, z: -1.5 }
+          });
+        }
+
+        const el = document.getElementById("library-ui-container");
+        el.classList.add("hidden");
+      };
+      executeOnetime(func, "spawnLibrary");
+    }
+  });
+
   const scene = document.querySelector("a-scene");
   const disableAutoExitOnIdle =
     qsTruthy("allow_idle") || (process.env.NODE_ENV === "development" && !qs.get("idle_timeout"));
@@ -557,18 +586,22 @@ function handleHubChannelJoined(entryManager, hubChannel, messageDispatch, data,
     messageDispatch: messageDispatch,
     onSendMessage: messageDispatch.dispatch,
     onLoaded: () => store.executeOnLoadActions(scene),
-    onMediaSearchResultEntrySelected: (entry, selectAction) =>
-      scene.emit("action_selected_media_result_entry", { entry, selectAction }),
+    onMediaSearchResultEntrySelected: (entry, selectAction) => {
+      console.log({ entry, selectAction });
+      scene.emit("action_selected_media_result_entry", { entry, selectAction });
+    },
     onMediaSearchCancelled: entry => scene.emit("action_media_search_cancelled", entry),
     onAvatarSaved: entry => scene.emit("action_avatar_saved", entry),
     embedToken: embedToken
   });
 
   scene.addEventListener("action_selected_media_result_entry", e => {
+    console.log(e);
     const { entry, selectAction } = e.detail;
+    console.log({ entries: entry });
     if ((entry.type !== "scene_listing" && entry.type !== "scene") || selectAction !== "use") return;
     if (!hubChannel.can("update_hub")) return;
-
+    console.log({ entry, selectAction });
     hubChannel.updateScene(entry.url);
   });
 
@@ -590,7 +623,7 @@ function handleHubChannelJoined(entryManager, hubChannel, messageDispatch, data,
       const objectsScene = document.querySelector("#objects-scene");
       const objectsUrl = getReticulumFetchUrl(`/${hub.hub_id}/objects.gltf`);
       const objectsEl = document.createElement("a-entity");
-
+      console.log({ objectsUrl });
       objectsEl.setAttribute("gltf-model-plus", { src: objectsUrl, useCache: false, inflate: true });
 
       if (!isBotMode) {
@@ -820,7 +853,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   scene.addEventListener("scene_media_selected", e => {
     const sceneInfo = e.detail;
-
+    console.log({ e });
     performConditionalSignIn(
       () => hubChannel.can("update_hub"),
       () => hubChannel.updateScene(sceneInfo),
@@ -1017,7 +1050,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   environmentScene.addEventListener("model-loaded", ({ detail: { model } }) => {
     console.log("Environment scene has loaded");
-
+    console.log({ model });
     if (!scene.is("entered")) {
       setupLobbyCamera();
     }

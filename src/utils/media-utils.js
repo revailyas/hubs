@@ -153,6 +153,8 @@ export const addMedia = (
   parentEl = null,
   linkedEl = null
 ) => {
+  console.log("media added");
+  console.log({ src, contentOrigin, animate, mediaOptions, template });
   const scene = AFRAME.scenes[0];
 
   const entity = document.createElement("a-entity");
@@ -229,8 +231,10 @@ export const addMedia = (
   }
 
   if (contentOrigin) {
+    console.log("content origin accepted ");
     entity.addEventListener("media_resolved", ({ detail }) => {
       const objectType = objectTypeForOriginAndContentType(contentOrigin, detail.contentType, detail.src);
+      console.log({ detail, objectType });
       scene.emit("object_spawned", { objectType });
     });
   }
@@ -239,6 +243,17 @@ export const addMedia = (
 };
 
 export const cloneMedia = (sourceEl, template, src = null, networked = true, link = false, parentEl = null) => {
+  console.log({
+    src,
+    template,
+    URL: ObjectContentOrigins.URL,
+    contentSubtype,
+    fitToBox,
+    mediaOptions,
+    networked,
+    parentEl,
+    link
+  });
   if (!src) {
     ({ src } = sourceEl.components["media-loader"].data);
   }
