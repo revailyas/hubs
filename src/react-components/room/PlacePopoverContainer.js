@@ -63,13 +63,13 @@ export function PlacePopoverContainer({ scene, mediaSearchStore, showNonHistorie
               label: <FormattedMessage id="place-popover.item-type.gif" defaultMessage="GIF" />,
               onSelect: () => mediaSearchStore.sourceNavigate("gifs")
             },
-            // configs.integration("sketchfab") && {
-            //   id: "model",
-            //   icon: ObjectIcon,
-            //   color: "accent2",
-            //   label: <FormattedMessage id="place-popover.item-type.model" defaultMessage="3D Model" />,
-            //   onSelect: () => mediaSearchStore.sourceNavigate("sketchfab")
-            // },
+            configs.integration("sketchfab") && {
+              id: "model",
+              icon: ObjectIcon,
+              color: "accent2",
+              label: <FormattedMessage id="place-popover.item-type.model" defaultMessage="3D Model" />,
+              onSelect: () => mediaSearchStore.sourceNavigate("sketchfab")
+            },
             // {
             //   id: "assemblr_library",
             //   icon: ObjectIcon,

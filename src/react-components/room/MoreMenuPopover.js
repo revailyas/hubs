@@ -23,7 +23,11 @@ function MoreMenuItem({ item, closePopover }) {
           <span>{item.label}</span>
         </a>
       ) : (
-        <button className={styles.moreMenuItemTarget} onClick={event => item.onClick(item, event)}>
+        <button
+          id={`more-menu-${item.id}`}
+          className={styles.moreMenuItemTarget}
+          onClick={event => item.onClick(item, event)}
+        >
           <Icon />
           <span>{item.label}</span>
         </button>

@@ -258,6 +258,10 @@ import { ThemeProvider } from "./react-components/styles/theme";
 import { LogMessageType } from "./react-components/room/ChatSidebar";
 import { blrInfoExtractor } from "./integrations/blr";
 import { addMedia } from "./utils/media-utils";
+import { getUserEmailByToken } from "./integrations/firebase/auth";
+import initializeFirebase from "./integrations/firebase/config";
+
+initializeFirebase();
 
 const PHOENIX_RELIABLE_NAF = "phx-reliable";
 NAF.options.firstSyncSource = PHOENIX_RELIABLE_NAF;
@@ -544,7 +548,7 @@ function onConnectionError(entryManager, connectError) {
 // TODO: Find a home for this
 // TODO: Naming. Is this an "event bus"?
 const events = emitter();
-function handleHubChannelJoined(entryManager, hubChannel, messageDispatch, data, permsToken) {
+async function handleHubChannelJoined(entryManager, hubChannel, messageDispatch, data, permsToken, authChannel) {
   const scene = document.querySelector("a-scene");
   const isRejoin = NAF.connection.isConnected();
 
@@ -570,6 +574,14 @@ function handleHubChannelJoined(entryManager, hubChannel, messageDispatch, data,
   }
 
   const hub = data.hubs[0];
+
+  if (qs.get("creator_token")) {
+    // hub.embed_token = qs.get("creator_token");
+    console.log("dapet token");
+    store.update({
+      creatorAssignmentTokens: [{ hubId: hub.hub_id, creatorAssignmentToken: qs.get("creator_token") }]
+    });
+  }
   let embedToken = hub.embed_token;
 
   if (!embedToken) {
@@ -699,6 +711,50 @@ function handleHubChannelJoined(entryManager, hubChannel, messageDispatch, data,
       });
     }
   })();
+
+  async function autoLogin(userEmail) {
+    const autoFillEmail = setInterval(() => {
+      const popupButton = document.getElementById("main-menu-more-btn");
+      if (popupButton) {
+        popupButton.click();
+        const signInButton = document.getElementById("more-menu-sign-in");
+        const emailForm = document.getElementById("id_0");
+        signInButton.click();
+        emailForm.value = userEmail;
+        emailForm.click();
+        const buttonList = document.getElementsByTagName("button");
+        for (var i = 0, max = buttonList.length; i < max; i++) {
+          // Do something with the element here
+          const el = buttonList[i];
+          if (el.outerText === "Next") {
+            el.click();
+          }
+        }
+        clearInterval(autoFillEmail);
+      }
+    }, 500);
+  }
+
+  if (qs.get("auth")) {
+    const userEmail = await getUserEmailByToken(qs.get("auth"));
+
+    const cred = store.state.credentials;
+    console.log({ userEmail, hub, cred });
+    if (userEmail && cred.email) {
+      if (userEmail !== cred.email) {
+        console.log("need to sign out!!");
+        window.APP.store.update({ credentials: { token: null, email: null } });
+        window.APP.store.clearStoredArray("creatorAssignmentTokens");
+        authChannel.signOut(hubChannel);
+        autoLogin(userEmail);
+      } else {
+        console.log("email is match");
+      }
+    } else {
+      console.log("perform sign in!");
+      autoLogin(userEmail);
+    }
+  }
 }
 
 async function runBotMode(scene, entryManager) {
@@ -849,6 +905,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       () => pushHistoryState(history, "overlay", "avatar-editor"),
       SignInMessages.createAvatar
     );
+  });
+
+  window.addEventListener("verify_assemblr_auth", () => {
+    performConditionalSignIn(() => hubChannel.signedIn, () => {}, SignInMessages.authorize);
   });
 
   scene.addEventListener("scene_media_selected", e => {
@@ -1317,7 +1377,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
 
       await presenceSync.promise;
-      handleHubChannelJoined(entryManager, hubChannel, messageDispatch, data, permsToken, hubChannel, events);
+      handleHubChannelJoined(
+        entryManager,
+        hubChannel,
+        messageDispatch,
+        data,
+        permsToken,
+        hubChannel,
+        events,
+        authChannel
+      );
     })
     .receive("error", res => {
       if (res.reason === "closed") {

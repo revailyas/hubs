@@ -24,6 +24,7 @@ export const ToolbarButton = forwardRef(
   ) => {
     return (
       <button
+        id={label === "More" && "main-menu-more-btn"}
         ref={ref}
         className={classNames(
           styles.toolbarButton,

@@ -15,6 +15,10 @@ export const SignInStep = {
 };
 
 export const SignInMessages = defineMessages({
+  authorize: {
+    id: "sign-in-modal.signin-message.authorize",
+    defaultMessage: "You'll need to check your email to link assemblr account with assemblr hub."
+  },
   pin: {
     id: "sign-in-modal.signin-message.pin",
     defaultMessage: "You'll need to sign in to pin objects."
@@ -113,6 +117,10 @@ export function SubmitEmail({ onSubmitEmail, initialEmail, privacyUrl, termsUrl,
         value={email}
         onChange={onChangeEmail}
         placeholder="example@example.com"
+        onClick={e => {
+          const value = e.target.value;
+          setEmail(value);
+        }}
       />
       <p>
         <small>

@@ -260,7 +260,7 @@ async function materialParser(materialName, meshChild, objectInfo) {
     //if(!mainTexture) return
     switch (shaderType) {
       case "mobile/diffusetint":
-        meshChild.material = new THREE.MeshPhongMaterial({
+        meshChild.material = new THREE.MeshStandardMaterial({
           color: materialColor,
           side: THREE.FrontSide,
           transparent: false
