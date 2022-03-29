@@ -1,5 +1,6 @@
 import firebase from "firebase/app";
 import "firebase/database";
+import "firebase/auth";
 
 const getUserIdFromToken = async token => {
   return await new Promise(resolve => {
@@ -40,4 +41,60 @@ const getUserEmailByToken = async token => {
   });
 };
 
-export { getUserEmailByToken };
+async function signInWithAuthKey(key) {
+  return await new Promise(resolve => {
+    firebase
+      .auth()
+      .signInWithCustomToken(key)
+      .then(cred => {
+        console.log(cred);
+        if (cred.user) {
+          resolve(cred.user);
+        } else {
+          resolve(null);
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  });
+}
+
+const getTokenFromAuthKey = async authKey => {
+  return await new Promise(resolve => {
+    firebase
+      .database()
+      .ref("UserGeneratedToken")
+      .child(authKey)
+      .once("value", snap => {
+        const data = snap.val();
+        if (data.token) {
+          resolve(data.token);
+        } else {
+          resolve(null);
+        }
+      });
+  });
+};
+
+async function login(authKey) {
+  const userToken = await getTokenFromAuthKey(authKey);
+  console.log({ userToken });
+  return await signInWithAuthKey(userToken);
+}
+
+const getCurrentToken = async () => {
+  return await new Promise(resolve => {
+    firebase
+      .auth()
+      .currentUser.getIdToken(false)
+      .then(token => {
+        console.log(token);
+        resolve(token);
+      });
+  });
+};
+
+window.getCurrentToken = getCurrentToken;
+
+export { getUserEmailByToken, login, getCurrentToken };

@@ -70,27 +70,27 @@ export function PlacePopoverContainer({ scene, mediaSearchStore, showNonHistorie
               label: <FormattedMessage id="place-popover.item-type.model" defaultMessage="3D Model" />,
               onSelect: () => mediaSearchStore.sourceNavigate("sketchfab")
             },
-            // {
-            //   id: "assemblr_library",
-            //   icon: ObjectIcon,
-            //   color: "accent1",
-            //   label: <FormattedMessage id="place-popover.item-type.library" defaultMessage="Assemblr Library" />,
-            //   onSelect: async () => {
-            //     console.log("nambah object");
+            {
+              id: "assemblr_library",
+              icon: ObjectIcon,
+              color: "accent1",
+              label: <FormattedMessage id="place-popover.item-type.library" defaultMessage="Assemblr Library" />,
+              onSelect: async () => {
+                console.log("nambah object");
 
-            //     // const blrID = "2_i04d6VDV1CelwzZw5MYMAn6DLQd2_1_blrf-BlackFootedFerret";
-            //     // const blrPath = blrInfoExtractor(blrID);
+                // const blrID = "2_i04d6VDV1CelwzZw5MYMAn6DLQd2_1_blrf-BlackFootedFerret";
+                // const blrPath = blrInfoExtractor(blrID);
 
-            //     // const { entity } = addMedia(blrPath, "#interactable-media", 1);
-            //     // entity.setAttribute("offset-relative-to", {
-            //     //   target: "#avatar-pov-node",
-            //     //   offset: { x: 0, y: 0, z: -1.5 }
-            //     // });
-            //     const libraryContainer = document.getElementById("library-ui-container");
-            //     libraryContainer.classList.remove("hidden");
-            //     console.log(libraryContainer);
-            //   }
-            // },
+                // const { entity } = addMedia(blrPath, "#interactable-media", 1);
+                // entity.setAttribute("offset-relative-to", {
+                //   target: "#avatar-pov-node",
+                //   offset: { x: 0, y: 0, z: -1.5 }
+                // });
+                const libraryContainer = document.getElementById("library-ui-container");
+                libraryContainer.classList.remove("hidden");
+                console.log(libraryContainer);
+              }
+            },
             {
               id: "avatar",
               icon: AvatarIcon,

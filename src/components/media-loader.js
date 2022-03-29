@@ -652,7 +652,7 @@ AFRAME.registerComponent("media-loader", {
             contentType: contentType,
             inflate: true,
             batch,
-            modelToWorldScale: this.data.fitToBox ? 0.0001 : 1.0
+            modelToWorldScale: 0.01
           })
         );
       } else {

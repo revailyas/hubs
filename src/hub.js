@@ -258,7 +258,7 @@ import { ThemeProvider } from "./react-components/styles/theme";
 import { LogMessageType } from "./react-components/room/ChatSidebar";
 import { blrInfoExtractor } from "./integrations/blr";
 import { addMedia } from "./utils/media-utils";
-import { getUserEmailByToken } from "./integrations/firebase/auth";
+import { getUserEmailByToken, login } from "./integrations/firebase/auth";
 import initializeFirebase from "./integrations/firebase/config";
 
 initializeFirebase();
@@ -736,23 +736,25 @@ async function handleHubChannelJoined(entryManager, hubChannel, messageDispatch,
   }
 
   if (qs.get("auth")) {
-    const userEmail = await getUserEmailByToken(qs.get("auth"));
-
-    const cred = store.state.credentials;
-    console.log({ userEmail, hub, cred });
-    if (userEmail && cred.email) {
-      if (userEmail !== cred.email) {
-        console.log("need to sign out!!");
-        window.APP.store.update({ credentials: { token: null, email: null } });
-        window.APP.store.clearStoredArray("creatorAssignmentTokens");
-        authChannel.signOut(hubChannel);
-        autoLogin(userEmail);
+    const userInfo = await login(qs.get("auth"));
+    if (userInfo) {
+      const userEmail = userInfo.email;
+      const cred = store.state.credentials;
+      console.log({ userEmail, hub, cred });
+      if (userEmail && cred.email) {
+        if (userEmail !== cred.email) {
+          console.log("need to sign out!!");
+          window.APP.store.update({ credentials: { token: null, email: null } });
+          window.APP.store.clearStoredArray("creatorAssignmentTokens");
+          authChannel.signOut(hubChannel);
+          autoLogin(userEmail);
+        } else {
+          console.log("email is match");
+        }
       } else {
-        console.log("email is match");
+        console.log("perform sign in!");
+        autoLogin(userEmail);
       }
-    } else {
-      console.log("perform sign in!");
-      autoLogin(userEmail);
     }
   }
 }
