@@ -18,11 +18,12 @@ const LibraryUI = () => {
     libraryToken !== "" && (
       <div id="library-ui-container" className="hidden">
         <iframe
-          src="http://localhost:3002/library3d"
+          src="https://production.depbsux1nbfvt.amplifyapp.com/library3d"
           frameBorder={"none"}
           onLoad={e => {
             const element = e.target;
             console.log("ngirim token");
+            console.log(libraryToken);
             element.contentWindow.postMessage(
               {
                 id: "webplayer-token",

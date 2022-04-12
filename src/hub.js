@@ -258,10 +258,12 @@ import { ThemeProvider } from "./react-components/styles/theme";
 import { LogMessageType } from "./react-components/room/ChatSidebar";
 import { blrInfoExtractor } from "./integrations/blr";
 import { addMedia } from "./utils/media-utils";
-import { getUserEmailByToken, login } from "./integrations/firebase/auth";
+import { login } from "./integrations/firebase/auth";
 import initializeFirebase from "./integrations/firebase/config";
+import { initLocalDatabase } from "./integrations/indexDB";
 
 initializeFirebase();
+initLocalDatabase();
 
 const PHOENIX_RELIABLE_NAF = "phx-reliable";
 NAF.options.firstSyncSource = PHOENIX_RELIABLE_NAF;
@@ -332,7 +334,6 @@ const qsVREntryType = qs.get("vr_entry_type");
 function mountUI(props = {}) {
   console.log("Hub opened");
   window.addEventListener("message", e => {
-    const event = e.data;
     if (e.data.id === "webplayer editor") {
       const func = function() {
         const param = e.data.data;
@@ -342,7 +343,7 @@ function mountUI(props = {}) {
           const blrID = param.blrpath;
           const blrPath = blrInfoExtractor(blrID);
 
-          const { entity } = addMedia(blrPath, "#interactable-media", 1);
+          const { entity } = addMedia(blrPath, "#interactable-media", undefined, undefined, false, true);
           entity.setAttribute("offset-relative-to", {
             target: "#avatar-pov-node",
             offset: { x: 0, y: 0, z: -1.5 }

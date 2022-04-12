@@ -1,4 +1,4 @@
-import { cloneMedia } from "../utils/media-utils";
+import { addMedia, cloneMedia } from "../utils/media-utils";
 import { guessContentType } from "../utils/media-url-utils";
 
 AFRAME.registerComponent("clone-media-button", {
@@ -17,15 +17,27 @@ AFRAME.registerComponent("clone-media-button", {
     });
 
     this.onClick = () => {
-      const { entity } = cloneMedia(this.targetEl, "#interactable-media", this.src);
+      let entity;
+      console.log(this.targetEl.object3D);
+      if (this.src.includes(".blr")) {
+        entity = addMedia(this.src, "#interactable-media", undefined, undefined, false, true).entity;
+        entity.object3D.scale.copy(this.targetEl.object3D.scale);
+        entity.object3D.matrixNeedsUpdate = true;
 
-      entity.object3D.scale.copy(this.targetEl.object3D.scale);
-      entity.object3D.matrixNeedsUpdate = true;
+        entity.setAttribute("offset-relative-to", {
+          target: "#avatar-pov-node",
+          offset: { x: 0, y: 0, z: -1.5 * this.targetEl.object3D.scale.z }
+        });
+      } else {
+        entity = cloneMedia(this.targetEl, "#interactable-media", this.src).entity;
+        entity.object3D.scale.copy(this.targetEl.object3D.scale);
+        entity.object3D.matrixNeedsUpdate = true;
 
-      entity.setAttribute("offset-relative-to", {
-        target: "#avatar-pov-node",
-        offset: { x: 0, y: 0, z: -1.5 * this.targetEl.object3D.scale.z }
-      });
+        entity.setAttribute("offset-relative-to", {
+          target: "#avatar-pov-node",
+          offset: { x: 0, y: 0, z: -1.5 * this.targetEl.object3D.scale.z }
+        });
+      }
     };
   },
 

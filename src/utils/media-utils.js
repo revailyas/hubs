@@ -183,6 +183,8 @@ export const addMedia = (
   // If we're re-pasting an existing src in the scene, we should use the latest version
   // seen across any other entities. Otherwise, start with version 1.
   const version = getLatestMediaVersionOfSrc(src);
+  let isFirstLoadBlr = false;
+  if (src.includes(".blr")) isFirstLoadBlr = true;
 
   entity.setAttribute("media-loader", {
     fitToBox,
@@ -193,8 +195,13 @@ export const addMedia = (
     contentSubtype,
     fileIsOwned: !needsToBeUploaded,
     linkedEl,
-    mediaOptions
+    mediaOptions,
+    isFirstLoadBlr
   });
+
+  if (src.includes(".blr")) {
+    //entity.object3D.scale.multiplyScalar(2);
+  }
 
   entity.object3D.matrixNeedsUpdate = true;
 

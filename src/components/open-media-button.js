@@ -47,6 +47,7 @@ AFRAME.registerComponent("open-media-button", {
 
       let hubId;
       if (this.data.onlyOpenLink) {
+        if (this.src.includes(".blr")) return;
         await exitImmersive();
         window.open(this.src);
       } else if (await isLocalHubsAvatarUrl(this.src)) {
@@ -68,6 +69,7 @@ AFRAME.registerComponent("open-media-button", {
           location.href = this.src;
         }
       } else {
+        if (this.src.includes(".blr")) return;
         await exitImmersive();
         window.open(this.src);
       }

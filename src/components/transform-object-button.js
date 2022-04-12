@@ -11,7 +11,9 @@ export const TRANSFORM_MODE = {
   SCALE: "scale"
 };
 
-const STEP_LENGTH = Math.PI / 10;
+//const STEP_LENGTH = Math.PI / 10;
+//SET ROTATION STEP to 5 DEGREE
+const STEP_LENGTH = 0.0872665;
 const CAMERA_WORLD_QUATERNION = new THREE.Quaternion();
 const CAMERA_WORLD_POSITION = new THREE.Vector3();
 const TARGET_WORLD_QUATERNION = new THREE.Quaternion();

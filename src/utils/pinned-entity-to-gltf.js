@@ -17,6 +17,8 @@ export default function pinnedEntityToGltf(el) {
   const position = object3D.position.toArray();
   const scale = object3D.scale.toArray();
 
+  console.log({ scale, object3D });
+
   if (!equalArray(rotation, [0, 0, 0, 1])) gltfNode.rotation = rotation;
   if (!equalArray(position, [0, 0, 0])) gltfNode.translation = position;
   if (!equalArray(scale, [1, 1, 1])) gltfNode.scale = scale;

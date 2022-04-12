@@ -781,37 +781,40 @@ AFRAME.registerComponent("gltf-model-plus", {
       } else {
         generateMeshBVH(this.model);
       }
+      //const indexToEntityMap = {};
 
-      const indexToEntityMap = {};
+      const object3DToSet = this.model;
 
-      let object3DToSet = this.model;
-      if (
-        this.data.inflate &&
-        (this.inflatedEl = inflateEntities(
-          indexToEntityMap,
-          this.model,
-          this.templates,
-          true,
-          this.data.modelToWorldScale
-        ))
-      ) {
-        console.log("masuuuk");
-        this.el.appendChild(this.inflatedEl);
+      // if (
+      //   this.data.inflate &&
+      //   (this.inflatedEl = inflateEntities(
+      //     indexToEntityMap,
+      //     this.model,
+      //     this.templates,
+      //     true,
+      //     this.data.modelToWorldScale
+      //   ))
+      // ) {
+      //   console.log("13");
+      //   this.el.appendChild(this.inflatedEl);
 
-        object3DToSet = this.inflatedEl.object3D;
-        object3DToSet.visible = false;
+      //   console.log("14");
+      //   object3DToSet = this.inflatedEl.object3D;
+      //   console.log("15");
+      //   object3DToSet.visible = false;
 
-        // TODO: Still don't fully understand the lifecycle here and how it differs between browsers, we should dig in more
-        // Wait one tick for the appended custom elements to be connected before attaching templates
-        await nextTick(); // TODO: there must be a nicer pattern for this
-
-        await inflateComponents(this.inflatedEl, indexToEntityMap);
-
-        for (const name in this.templates) {
-          attachTemplate(this.el, name, this.templates[name]);
-        }
-      }
-
+      //   console.log("16");
+      //   // TODO: Still don't fully understand the lifecycle here and how it differs between browsers, we should dig in more
+      //   // Wait one tick for the appended custom elements to be connected before attaching templates
+      //   await nextTick(); // TODO: there must be a nicer pattern for this
+      //   console.log("17");
+      //   await inflateComponents(this.inflatedEl, indexToEntityMap);
+      //   console.log("18");
+      //   for (const name in this.templates) {
+      //     console.log("19");
+      //     attachTemplate(this.el, name, this.templates[name]);
+      //   }
+      // }
       // The call to setObject3D below recursively clobbers any `el` backreferences to entities
       // in the entire inflated entity graph to point to `object3DToSet`.
       //
@@ -820,26 +823,25 @@ AFRAME.registerComponent("gltf-model-plus", {
       // this, all the `el` properties on these object3ds would point to the `object3DToSet` which is either
       // the model or the root GLTF inflated entity.
       const rewires = [];
-
       object3DToSet.traverse(o => {
         const el = o.el;
         if (el) rewires.push(() => (o.el = el));
       });
 
+      console.log({ element: this.el });
+
       // if (lastSrc) {
       //   gltfCache.release(lastSrc);
       // }
       this.el.setObject3D("mesh", object3DToSet);
-
       rewires.forEach(f => f());
       object3DToSet.name = "Custom 3D";
       object3DToSet.visible = true;
       this.el.emit("model-loaded", { format: "gltf", model: object3DToSet });
-      console.log({ object3DToSet });
     } catch (e) {
       //gltfCache.release(src);
       console.error("Failed to load glTF model", e, this);
-      this.el.emit("model-error", { format: "gltf", src });
+      this.el.emit("model-error", { format: "gltf", undefined });
     }
   },
 

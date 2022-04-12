@@ -60,7 +60,8 @@ AFRAME.registerComponent("media-loader", {
       default: {},
       parse: v => (typeof v === "object" ? v : JSON.parse(v)),
       stringify: JSON.stringify
-    }
+    },
+    isFirstLoadBlr: { default: false }
   },
 
   init() {
@@ -624,6 +625,7 @@ AFRAME.registerComponent("media-loader", {
           this.el.setAttribute("position-at-border__freeze-unprivileged", { isFlat: true });
         }
       } else if (contentType === "binary/octet-stream") {
+        console.log(this.data);
         console.log("load blr object");
         const model = await loadBLRFileByURL(src);
         this.el.addEventListener(
@@ -644,6 +646,21 @@ AFRAME.registerComponent("media-loader", {
             modifyGravityOnRelease: !this.data.mediaOptions.applyGravity
           });
         }
+
+        const bbox = new THREE.Box3().setFromObject(model);
+        const modelWidth = bbox.max.x - bbox.min.x;
+        const modelHeight = bbox.max.y - bbox.min.y;
+        const modelDepth = bbox.max.z - bbox.min.z;
+
+        const largestSize = Math.max(modelWidth, modelHeight, modelDepth);
+        const expectedSize = 10;
+        const divValue = largestSize / expectedSize;
+        model.scale.multiplyScalar(1 / divValue);
+
+        console.log({ modelWidth, modelHeight });
+        if (this.data.isFirstLoadBlr === true) {
+          console.log("first load blr");
+        }
         this.el.setAttribute(
           "gltf-model-plus",
           Object.assign({}, this.data.mediaOptions, {
@@ -652,7 +669,7 @@ AFRAME.registerComponent("media-loader", {
             contentType: contentType,
             inflate: true,
             batch,
-            modelToWorldScale: 0.01
+            modelToWorldScale: 1
           })
         );
       } else {
