@@ -17,6 +17,7 @@ export function useAccessibleOutlineStyle(keyboardUserClass = "keyboard-user") {
       }
 
       function onKeyDown(e) {
+        console.log(e.keyCode);
         if (e.key === "Tab" && !keyboardUser) {
           document.body.classList.add(keyboardUserClass);
           setKeyboardUser(true);
