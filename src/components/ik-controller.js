@@ -1,6 +1,10 @@
 import { waitForDOMContentLoaded } from "../utils/async-utils";
 const { Vector3, Quaternion, Matrix4, Euler } = THREE;
 
+function miliSecondDiff(date1, date2) {
+  return Math.abs(date1.getTime() - date2.getTime());
+}
+
 function quaternionAlmostEquals(epsilon, u, v) {
   // Note: q and -q represent same rotation
   return (
@@ -173,6 +177,105 @@ AFRAME.registerComponent("ik-controller", {
       return;
     }
 
+    AFRAME.scenes[0].object3D.children.forEach(child => {
+      if (child.el && child.el.id.includes("naf-")) {
+        if (!window.APP[child.el.id]) {
+          window.APP[child.el.id] = {
+            position: {
+              x: child.position.x,
+              y: child.position.y,
+              z: child.position.z
+            }
+          };
+        } else {
+          const currentPos = window.APP[child.el.id];
+          const element = document.getElementById(child.el.id).children[4];
+          if (element) {
+            const mesh = document.getElementById(child.el.id).children[4].object3D;
+            let mixer, clip, actions;
+            try {
+              mixer = document.getElementById(child.el.id).children[4].components["animation-mixer"].mixer;
+            } catch (error) {}
+
+            const valueDifference = function(a, b) {
+              return Math.abs(a - b);
+            };
+
+            const xDifference = valueDifference(parseFloat(currentPos.position.x), parseFloat(child.position.x));
+            const zDifference = valueDifference(parseFloat(currentPos.position.z), parseFloat(child.position.z));
+            if (
+              (currentPos.position.x !== child.position.x || currentPos.position.z !== child.position.z) &&
+              xDifference < 1 &&
+              zDifference < 1
+            ) {
+              child.moving = true;
+              window.APP[child.el.id] = {
+                position: {
+                  x: child.position.x,
+                  y: child.position.y,
+                  z: child.position.z
+                }
+              };
+            } else {
+              child.moving = false;
+            }
+
+            const switchToIdle = function() {
+              clip = mesh.animations.find(({ name }) => name === "Idle");
+              actions = mixer.clipAction(clip);
+              if (actions) {
+                mixer._actions.forEach(item => {
+                  if (item._clip.name === "Run") item.weight = 0;
+                  if (item._clip.name === "Idle") {
+                    item.weight = 1;
+                    item.time = 0;
+                  }
+                });
+                actions.time = 0;
+                actions.play();
+
+                mixer.update(0.001);
+              }
+            };
+
+            const switchToRun = function() {
+              clip = mesh.animations.find(({ name }) => name === "Run");
+              actions = mixer.clipAction(clip);
+              if (actions) {
+                actions.weight = 1;
+                mixer._actions.forEach(item => {
+                  if (item._clip.name === "Idle") item.weight = 0;
+                  if (item._clip.name === "Run") {
+                    item.weight = 1;
+                  }
+                });
+                actions.play();
+                child.lastMove = new Date();
+                mixer.update(0.001);
+              }
+            };
+
+            try {
+              if (child.moving === true) {
+                switchToRun();
+              } else {
+                if (child.lastMove) {
+                  const lastMove = child.lastMove;
+                  const now = new Date();
+                  const switchHandler = miliSecondDiff(lastMove, now);
+                  if (switchHandler > 50) {
+                    switchToIdle();
+                  }
+                } else {
+                  switchToIdle();
+                }
+              }
+            } catch (error) {}
+          }
+        }
+      }
+    });
+
     const root = this.ikRoot.el.object3D;
     root.updateMatrices();
     const { camera, leftController, rightController } = this.ikRoot;
@@ -267,6 +370,25 @@ AFRAME.registerComponent("ik-controller", {
       neck.matrixNeedsUpdate = true;
       head.matrixNeedsUpdate = true;
       chest.matrixNeedsUpdate = true;
+
+      if (
+        avatar.parent.animations.length === 6 ||
+        avatar.parent.animations.length === 7 ||
+        avatar.parent.animations.length === 5
+      ) {
+        //const box = new THREE.Box3().setFromObject(head.children[0].children[0]);
+
+        head.rotation.x = 0;
+        head.rotation.z = 0;
+        //head.position.y = -1.7;
+        //head.position.y = box.max.y * -1;
+
+        window.invRootToChest = invRootToChest;
+        window.rootToChest = rootToChest;
+        window.root = root;
+        window.head = head;
+        window.avatar = avatar;
+      }
     }
 
     const { leftHand, rightHand } = this;

@@ -108,6 +108,10 @@ export const xforms = {
       frame.setValueType(dest.value, constValue);
     };
   },
+  smoothRotating: function(frame, src, dest) {
+    frame.setValueType(dest.value, frame.get(src.value));
+    return !!frame.get(src.value);
+  },
   wasd_to_vec2: function(frame, { w, a, s, d }, { vec2 }) {
     let x = 0;
     let y = 0;

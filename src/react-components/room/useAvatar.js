@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { loadMyAvatar } from "../../integrations/avatar";
 
 export default function useAvatar() {
   const [state, setState] = useState({ hasVideoTextureTarget: false });
@@ -9,6 +10,16 @@ export default function useAvatar() {
     function onAvatarModelLoaded() {
       const hasVideoTextureTarget = !!avatarModelEl.querySelector("[video-texture-target]");
       setState({ hasVideoTextureTarget });
+
+      if (window.avatarTPSUpdated && avatarModelEl.object3D.animations.length > 10) {
+        loadMyAvatar();
+      }
+
+      if (window.avatarTPSUpdated && avatarModelEl.object3D.animations.length < 10) {
+        setTimeout(() => {
+          window.avatarLoaded = true;
+        }, 3000);
+      }
     }
 
     onAvatarModelLoaded();

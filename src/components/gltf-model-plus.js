@@ -678,7 +678,7 @@ export async function loadGLTF(src, contentType, onProgress, jsonPreprocessor) {
 }
 
 export async function loadModel(src, contentType = null, useCache = false, jsonPreprocessor = null) {
-  console.log(`Loading model ${src}`);
+  //console.log(`Loading model ${src}`);
   if (useCache) {
     if (gltfCache.has(src)) {
       gltfCache.retain(src);
@@ -742,9 +742,7 @@ AFRAME.registerComponent("gltf-model-plus", {
   },
 
   update() {
-    console.log({ data: this.data });
     if (this.data.hasOwnProperty("customModel") && this.data.customModel != null) {
-      console.log("load custom model");
       this.applySrcCustom(this.data.customModel);
     } else {
       this.applySrc(resolveAsset(this.data.src), this.data.contentType);
@@ -772,7 +770,6 @@ AFRAME.registerComponent("gltf-model-plus", {
   },
 
   async applySrcCustom(customModel) {
-    console.log({ customModel });
     try {
       this.el.emit("model-loading");
 
@@ -838,8 +835,6 @@ AFRAME.registerComponent("gltf-model-plus", {
         if (el) rewires.push(() => (o.el = el));
       });
 
-      console.log({ element: this.el });
-
       // if (lastSrc) {
       //   gltfCache.release(lastSrc);
       // }
@@ -872,7 +867,13 @@ AFRAME.registerComponent("gltf-model-plus", {
 
       this.el.emit("model-loading");
       const gltf = await loadModel(src, contentType, this.data.useCache, this.jsonPreprocessor);
-      console.log({ gltf, src });
+
+      let modelMesh;
+      // if (gltf.animations.length === 6) {
+      //   modelMesh = gltf.scene.clone();
+      //   modelMesh.name = "model mesh";
+      //   console.log({ modelMesh });
+      // }
       // If we started loading something else already
       // TODO: there should be a way to cancel loading instead
       if (src != this.lastSrc) return;
@@ -881,7 +882,9 @@ AFRAME.registerComponent("gltf-model-plus", {
       this.disposeLastInflatedEl();
 
       this.model = gltf.scene;
-      console.log({ model: this.model });
+      if (gltf.animations.length < 17) {
+        this.model.position.y = 0;
+      }
 
       if (this.data.batch) {
         this.el.sceneEl.systems["hubs-systems"].batchManagerSystem.addObject(this.model);
@@ -935,6 +938,10 @@ AFRAME.registerComponent("gltf-model-plus", {
 
       object3DToSet.traverse(o => {
         const el = o.el;
+        el.object3D.traverse(nodes => {
+          if (nodes.isMesh) nodes.material.vertexColors = false;
+        });
+        //if (el) el.material.vertexColors = false;
         if (el) rewires.push(() => (o.el = el));
       });
 
@@ -946,6 +953,7 @@ AFRAME.registerComponent("gltf-model-plus", {
       rewires.forEach(f => f());
 
       object3DToSet.visible = true;
+
       this.el.emit("model-loaded", { format: "gltf", model: object3DToSet });
     } catch (e) {
       gltfCache.release(src);

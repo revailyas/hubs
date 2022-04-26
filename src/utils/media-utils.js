@@ -184,7 +184,7 @@ export const addMedia = (
   // seen across any other entities. Otherwise, start with version 1.
   const version = getLatestMediaVersionOfSrc(src);
   let isFirstLoadBlr = false;
-  if (src.includes(".blr")) isFirstLoadBlr = true;
+  if (typeof src === "string" && src.includes(".blr")) isFirstLoadBlr = true;
 
   entity.setAttribute("media-loader", {
     fitToBox,
@@ -198,10 +198,6 @@ export const addMedia = (
     mediaOptions,
     isFirstLoadBlr
   });
-
-  if (src.includes(".blr")) {
-    //entity.object3D.scale.multiplyScalar(2);
-  }
 
   entity.object3D.matrixNeedsUpdate = true;
 
@@ -302,12 +298,22 @@ export function injectCustomShaderChunks(obj) {
       // material, so maps cannot be updated at runtime. This breaks UI elements who have
       // hover/toggle state, so for now just skip these while we figure out a more correct
       // solution.
-      if (
-        object.el.classList.contains("ui") ||
-        object.el.classList.contains("hud") ||
-        object.el.getAttribute("text-button")
-      )
-        return material;
+      if (window.avatarLoaded) {
+        if (
+          object.el &&
+          (object.el.classList.contains("ui") ||
+            object.el.classList.contains("hud") ||
+            object.el.getAttribute("text-button"))
+        )
+          return material;
+      } else {
+        if (
+          object.el.classList.contains("ui") ||
+          object.el.classList.contains("hud") ||
+          object.el.getAttribute("text-button")
+        )
+          return material;
+      }
 
       // Used when the object is batched
       if (batchManagerSystem.batchingEnabled) {

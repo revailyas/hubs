@@ -572,8 +572,8 @@ AFRAME.registerComponent("media-loader", {
             src: accessibleUrl,
             contentType: contentType,
             inflate: true,
-            batch,
-            modelToWorldScale: this.data.fitToBox ? 0.0001 : 1.0
+            batch
+            //modelToWorldScale: this.data.fitToBox ? 0.0001 : 1.0
           })
         );
       } else if (contentType.startsWith("text/html")) {

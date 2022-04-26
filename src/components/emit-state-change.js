@@ -13,6 +13,7 @@ AFRAME.registerComponent("emit-state-change", {
 
   stateadded(e) {
     if (e.detail === this.data.state) {
+      console.log({ eventEmiter: this.data.event });
       this.el.emit(this.data.event);
     }
   },

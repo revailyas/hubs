@@ -94,6 +94,15 @@ import { TipContainer, FullscreenTip } from "./room/TipContainer";
 import { SpectatingLabel } from "./room/SpectatingLabel";
 import { SignInMessages } from "./auth/SignInModal";
 import { MediaDevicesEvents } from "../utils/media-devices-utils";
+import { loadMyAvatar } from "../integrations/avatar";
+import {
+  ChatToolbar,
+  Place2DToolbar,
+  Place3DToolbar,
+  PlaceReactionToolbar,
+  SeparatorToolbar,
+  ShareScreenToolbar
+} from "../integrations/ui/MainToolbar";
 
 const avatarEditorDebug = qsTruthy("avatarEditorDebug");
 
@@ -627,6 +636,9 @@ class UIRoot extends Component {
     if (this.mediaDevicesManager.isVideoShared) {
       console.log("Screen sharing enabled.");
     }
+
+    console.log("set user avatar");
+    loadMyAvatar();
   };
 
   attemptLink = async () => {
@@ -1147,36 +1159,36 @@ class UIRoot extends Component {
                 icon: EnterIcon,
                 onClick: () => this.showContextualSignInDialog()
               },
-          canCreateRoom && {
-            id: "create-room",
-            label: <FormattedMessage id="more-menu.create-room" defaultMessage="Create Room" />,
-            icon: AddIcon,
-            onClick: () =>
-              this.showNonHistoriedDialog(LeaveRoomModal, {
-                destinationUrl: "/",
-                reason: LeaveReason.createRoom
-              })
-          },
+          // canCreateRoom && {
+          //   id: "create-room",
+          //   label: <FormattedMessage id="more-menu.create-room" defaultMessage="Create Room" />,
+          //   icon: AddIcon,
+          //   onClick: () =>
+          //     this.showNonHistoriedDialog(LeaveRoomModal, {
+          //       destinationUrl: "/",
+          //       reason: LeaveReason.createRoom
+          //     })
+          // },
           {
             id: "user-profile",
-            label: <FormattedMessage id="more-menu.profile" defaultMessage="Change Name & Avatar" />,
+            label: <FormattedMessage id="more-menu.profile" defaultMessage="Change Name" />,
             icon: AvatarIcon,
             onClick: () => this.setSidebar("profile")
           },
-          {
-            id: "favorite-rooms",
-            label: <FormattedMessage id="more-menu.favorite-rooms" defaultMessage="Favorite Rooms" />,
-            icon: FavoritesIcon,
-            onClick: () =>
-              this.props.performConditionalSignIn(
-                () => this.props.hubChannel.signedIn,
-                () => {
-                  showFullScreenIfAvailable();
-                  this.props.mediaSearchStore.sourceNavigateWithNoNav("favorites", "use");
-                },
-                SignInMessages.favoriteRooms
-              )
-          },
+          // {
+          //   id: "favorite-rooms",
+          //   label: <FormattedMessage id="more-menu.favorite-rooms" defaultMessage="Favorite Rooms" />,
+          //   icon: FavoritesIcon,
+          //   onClick: () =>
+          //     this.props.performConditionalSignIn(
+          //       () => this.props.hubChannel.signedIn,
+          //       () => {
+          //         showFullScreenIfAvailable();
+          //         this.props.mediaSearchStore.sourceNavigateWithNoNav("favorites", "use");
+          //       },
+          //       SignInMessages.favoriteRooms
+          //     )
+          // },
           {
             id: "preferences",
             label: <FormattedMessage id="more-menu.preferences" defaultMessage="Preferences" />,
@@ -1548,13 +1560,13 @@ class UIRoot extends Component {
                   )
                 }
                 modal={this.state.dialog}
-                toolbarLeft={
-                  <InvitePopoverContainer
-                    hub={this.props.hub}
-                    hubChannel={this.props.hubChannel}
-                    scene={this.props.scene}
-                  />
-                }
+                // toolbarLeft={
+                //   <InvitePopoverContainer
+                //     hub={this.props.hub}
+                //     hubChannel={this.props.hubChannel}
+                //     scene={this.props.scene}
+                //   />
+                // }
                 toolbarCenter={
                   <>
                     {watching && (
@@ -1580,13 +1592,22 @@ class UIRoot extends Component {
                     {entered && (
                       <>
                         <AudioPopoverContainer scene={this.props.scene} />
+
+                        <ChatToolbar />
+                        <ChatToolbarButtonContainer onClick={() => this.toggleSidebar("chat")} />
+
+                        <ShareScreenToolbar />
                         <SharePopoverContainer scene={this.props.scene} hubChannel={this.props.hubChannel} />
-                        <PlacePopoverContainer
+                        {/* <PlacePopoverContainer
                           scene={this.props.scene}
                           hubChannel={this.props.hubChannel}
                           mediaSearchStore={this.props.mediaSearchStore}
                           showNonHistoriedDialog={this.showNonHistoriedDialog}
-                        />
+                        /> */}
+                        <SeparatorToolbar />
+                        <Place3DToolbar />
+                        <Place2DToolbar />
+                        <PlaceReactionToolbar />
                         {this.props.hubChannel.can("spawn_emoji") && (
                           <ReactionPopoverContainer
                             scene={this.props.scene}
@@ -1595,7 +1616,7 @@ class UIRoot extends Component {
                         )}
                       </>
                     )}
-                    <ChatToolbarButtonContainer onClick={() => this.toggleSidebar("chat")} />
+
                     {entered &&
                       isMobileVR && (
                         <ToolbarButton
@@ -1608,33 +1629,33 @@ class UIRoot extends Component {
                       )}
                   </>
                 }
-                toolbarRight={
-                  <>
-                    {entered &&
-                      isMobileVR && (
-                        <ToolbarButton
-                          icon={<VRIcon />}
-                          preset="accept"
-                          label={<FormattedMessage id="toolbar.enter-vr-button" defaultMessage="Enter VR" />}
-                          onClick={() => exit2DInterstitialAndEnterVR(true)}
-                        />
-                      )}
-                    {entered && (
-                      <ToolbarButton
-                        icon={<LeaveIcon />}
-                        label={<FormattedMessage id="toolbar.leave-room-button" defaultMessage="Leave" />}
-                        preset="cancel"
-                        onClick={() => {
-                          this.showNonHistoriedDialog(LeaveRoomModal, {
-                            destinationUrl: "/",
-                            reason: LeaveReason.leaveRoom
-                          });
-                        }}
-                      />
-                    )}
-                    <MoreMenuPopoverButton menu={moreMenu} />
-                  </>
-                }
+                // toolbarRight={
+                //   <>
+                //     {entered &&
+                //       isMobileVR && (
+                //         <ToolbarButton
+                //           icon={<VRIcon />}
+                //           preset="accept"
+                //           label={<FormattedMessage id="toolbar.enter-vr-button" defaultMessage="Enter VR" />}
+                //           onClick={() => exit2DInterstitialAndEnterVR(true)}
+                //         />
+                //       )}
+                //     {entered && (
+                //       <ToolbarButton
+                //         icon={<LeaveIcon />}
+                //         label={<FormattedMessage id="toolbar.leave-room-button" defaultMessage="Leave" />}
+                //         preset="cancel"
+                //         onClick={() => {
+                //           this.showNonHistoriedDialog(LeaveRoomModal, {
+                //             destinationUrl: "/",
+                //             reason: LeaveReason.leaveRoom
+                //           });
+                //         }}
+                //       />
+                //     )}
+                //     <MoreMenuPopoverButton menu={moreMenu} />
+                //   </>
+                // }
               />
             )}
           </div>

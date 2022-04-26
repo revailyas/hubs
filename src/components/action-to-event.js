@@ -28,6 +28,7 @@ AFRAME.registerComponent("action-to-event", {
     if (this.needsPermission && !this.hasPermission) return;
     const userinput = AFRAME.scenes[0].systems.userinput;
     if (userinput.get(this.data.path)) {
+      console.log({ event: this.data.event });
       this.el.emit(this.data.event);
     }
   }

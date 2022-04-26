@@ -59,6 +59,7 @@ export function SharePopoverButton({ items }) {
           onClick={togglePopover}
           label={title}
           preset="accent5"
+          style={{ opacity: 0 }}
         />
       )}
     </Popover>

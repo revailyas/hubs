@@ -120,7 +120,7 @@ export const SCHEMA = {
         globalVoiceVolume: { type: "number", default: 100 },
         globalMediaVolume: { type: "number", default: 100 },
         globalSFXVolume: { type: "number", default: 100 },
-        snapRotationDegrees: { type: "number", default: 45 },
+        snapRotationDegrees: { type: "number", default: 5 },
         materialQualitySetting: { type: "string", default: defaultMaterialQuality },
         enableDynamicShadows: { type: "bool", default: false },
         disableSoundEffects: { type: "bool", default: false },

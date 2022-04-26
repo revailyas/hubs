@@ -52,6 +52,7 @@ AFRAME.registerSystem("camera-tools", {
   },
 
   tick() {
+    //console.log(AFRAME.scenes[0].object3D);
     this.ticks++;
 
     // We update at most one camera viewfinder per frame.

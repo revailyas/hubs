@@ -15,6 +15,7 @@ AFRAME.registerSystem("scene-systems", {
 
   tick(t, dt) {
     if (!this.DOMContentDidLoad) return;
+
     this.animationMixerSystem.tick(dt);
     this.scenePreviewCameraSystem.tick();
     this.shadowSystem.tick();

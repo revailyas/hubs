@@ -61,7 +61,7 @@ AFRAME.registerComponent("hand-pose", {
     ) {
       return;
     }
-
+    console.log({ networkedAvatar: this.networkedAvatar });
     this.animatePose(NETWORK_POSES[this.pose], NETWORK_POSES[this.networkedAvatar.data[this.networkField]]);
     this.pose = this.networkedAvatar.data[this.networkField];
   },

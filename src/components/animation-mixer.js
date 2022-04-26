@@ -22,6 +22,7 @@ AFRAME.registerComponent("animation-mixer", {
     this.animations = animations;
   },
   play() {
+    console.log("play animation");
     components.push(this);
   },
   pause() {

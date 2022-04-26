@@ -84,6 +84,7 @@ export class CharacterControllerSystem {
     const targetForRig = new THREE.Vector3();
     //TODO: Use enqueue waypoint
     return function teleportTo(targetWorldPosition) {
+      if (!AFRAME.scenes[0].is("vr-mode")) return;
       this.isMotionDisabled = false;
       this.avatarRig.object3D.getWorldPosition(rig);
       this.avatarPOV.object3D.getWorldPosition(head);
@@ -94,6 +95,8 @@ export class CharacterControllerSystem {
       const navMeshExists = NAV_ZONE in this.scene.systems.nav.pathfinder.zones;
       this.findPositionOnNavMesh(targetForRig, targetForRig, this.avatarRig.object3D.position, navMeshExists);
       this.avatarRig.object3D.matrixNeedsUpdate = true;
+      console.log("teleport...");
+      console.log(this.avatarRig.object3D);
     };
   })();
 
@@ -245,16 +248,24 @@ export class CharacterControllerSystem {
       const snapRotateLeft = userinput.get(paths.actions.snapRotateLeft);
       const snapRotateRight = userinput.get(paths.actions.snapRotateRight);
       if (snapRotateLeft) {
-        this.dXZ += (preferences.snapRotationDegrees * Math.PI) / 180;
+        //this.dXZ += (preferences.snapRotationDegrees * Math.PI) / 180;
+        this.dXZ += (5 * Math.PI) / 180;
       }
       if (snapRotateRight) {
-        this.dXZ -= (preferences.snapRotationDegrees * Math.PI) / 180;
+        //this.dXZ -= (preferences.snapRotationDegrees * Math.PI) / 180;
+        this.dXZ -= (5 * Math.PI) / 180;
       }
       if (snapRotateLeft || snapRotateRight) {
         this.scene.systems["hubs-systems"].soundEffectsSystem.playSoundOneShot(SOUND_SNAP_ROTATE);
       }
       const characterAcceleration = userinput.get(paths.actions.characterAcceleration);
       if (characterAcceleration) {
+        if (characterAcceleration[0] !== 0 || characterAcceleration[1] !== 0) {
+          this.avatarRig.object3D.moving = true;
+        } else {
+          this.avatarRig.object3D.moving = false;
+        }
+
         const zCharacterAcceleration = -1 * characterAcceleration[1];
         this.relativeMotion.set(
           this.relativeMotion.x +

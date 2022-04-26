@@ -21,13 +21,27 @@ export const statusColors = ["recording", "unread", "enabled", "disabled"];
 
 export const ToolbarButton = forwardRef(
   (
-    { preset, className, iconContainerClassName, children, icon, label, selected, large, statusColor, type, ...rest },
+    {
+      preset,
+      className,
+      iconContainerClassName,
+      children,
+      icon,
+      label,
+      selected,
+      large,
+      statusColor,
+      type,
+      style,
+      ...rest
+    },
     ref
   ) => {
     return (
       <button
         id={label === "More" && "main-menu-more-btn"}
         ref={ref}
+        style={style}
         className={classNames(
           styles.toolbarButton,
           styles[preset],

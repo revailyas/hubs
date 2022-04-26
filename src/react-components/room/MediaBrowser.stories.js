@@ -316,30 +316,55 @@ export const AvatarListings = () => (
   </MediaBrowser>
 );
 
-export const Avatars = () => (
-  <MediaBrowser
-    searchPlaceholder="Search Avatars..."
-    mediaSources={mediaSources}
-    selectedSource={"avatars"}
-    activeFilter={"my-avatars"}
-    facets={FACETS.avatars}
-    headerRight={
-      <IconButton lg>
-        <LinkIcon />
-        <p>Custom Avatar</p>
-      </IconButton>
-    }
-    hasNext
-  >
-    <CreateTile label="Create Avatar" type="avatar" />
-    <MediaTile entry={avatar} />
-    <MediaTile entry={avatar} />
-    <MediaTile entry={avatar} />
-    <MediaTile entry={avatar} />
-    <MediaTile entry={avatar} />
-    <MediaTile entry={avatar} />
-  </MediaBrowser>
-);
+export const Avatars = () => {
+  const demoAvatar = {
+    attributions: {},
+    description: null,
+    gltfs: {
+      avatar: "https://hub.assemblrworld.com/api/v1/avatars/yvGhcJe/avatar.gltf?v=63817056227",
+      base: "https://hub.assemblrworld.com/api/v1/avatars/yvGhcJe/base.gltf?v=63817056227"
+      //avatar: "https://assemblrworld-asset.s3.ap-southeast-1.amazonaws.com/Asset/metaverse/public/Man.glb",
+      //base: "https://assemblrworld-asset.s3.ap-southeast-1.amazonaws.com/Asset/metaverse/public/Man.glb"
+    },
+    id: "yvGhcJe",
+    images: {
+      preview: {
+        height: 1280,
+        url: "https://hub-assemblr-assets.assemblrworld.com/files/c3f7e054-4cd6-4c66-907d-bd462de6ea22.png",
+        width: 720
+      }
+    },
+    name: "Custom Avatar",
+    type: "avatar",
+    url: "https://hub.assemblrworld.com/avatars/yvGhcJe"
+  };
+
+  return (
+    <MediaBrowser
+      searchPlaceholder="Search Avatars..."
+      mediaSources={mediaSources}
+      selectedSource={"avatars"}
+      activeFilter={"my-avatars"}
+      facets={FACETS.avatars}
+      headerRight={
+        <IconButton lg>
+          <LinkIcon />
+          <p>Custom Avatar</p>
+        </IconButton>
+      }
+      hasNext
+    >
+      <CreateTile label="Create Avatar" type="avatar" />
+      <MediaTile entry={demoAvatar} />
+      <MediaTile entry={avatar} />
+      <MediaTile entry={avatar} />
+      <MediaTile entry={avatar} />
+      <MediaTile entry={avatar} />
+      <MediaTile entry={avatar} />
+      <MediaTile entry={avatar} />
+    </MediaBrowser>
+  );
+};
 
 export const SketchfabModel = () => (
   <MediaBrowser

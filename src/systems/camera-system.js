@@ -6,6 +6,7 @@ import { getBox } from "../utils/auto-box-collider";
 import { isTagged } from "../components/tags";
 import { qsGet } from "../utils/qs_truthy";
 const customFOV = qsGet("fov");
+import { attach, detach } from "three/examples/jsm/utils/SceneUtils";
 //const enableThirdPersonMode = qsTruthy("thirdPerson");
 const enableThirdPersonMode = true;
 import { Layers } from "../components/layers";
@@ -149,7 +150,7 @@ const moveRigSoCameraLooksAtPivot = (function() {
 
 export const CAMERA_MODE_FIRST_PERSON = 0;
 export const CAMERA_MODE_THIRD_PERSON_NEAR = 1;
-export const CAMERA_MODE_THIRD_PERSON_FAR = 1;
+export const CAMERA_MODE_THIRD_PERSON_FAR = 2;
 export const CAMERA_MODE_INSPECT = 3;
 export const CAMERA_MODE_SCENE_PREVIEW = 4;
 
@@ -408,27 +409,27 @@ export class CameraSystem {
       const entered = scene.is("entered");
       uiRoot = uiRoot || document.getElementById("ui-root");
       const isGhost = !entered && uiRoot && uiRoot.firstChild && uiRoot.firstChild.classList.contains("isGhost");
-      if (isGhost && this.mode !== CAMERA_MODE_FIRST_PERSON && this.mode !== CAMERA_MODE_INSPECT) {
-        this.mode = CAMERA_MODE_FIRST_PERSON;
-        const position = new THREE.Vector3();
-        const quat = new THREE.Quaternion();
-        const scale = new THREE.Vector3();
-        this.viewingRig.object3D.updateMatrices();
-        this.viewingRig.object3D.matrixWorld.decompose(position, quat, scale);
-        position.setFromMatrixPosition(this.viewingCamera.matrixWorld);
-        position.y = position.y - 1.6;
-        setMatrixWorld(
-          this.avatarRig.object3D,
-          new THREE.Matrix4().compose(
-            position,
-            quat,
-            scale
-          )
-        );
-        scene.systems["hubs-systems"].characterController.fly = true;
-        this.avatarPOV.object3D.updateMatrices();
-        setMatrixWorld(this.avatarPOV.object3D, this.viewingCamera.matrixWorld);
-      }
+      // if (isGhost && this.mode !== CAMERA_MODE_FIRST_PERSON && this.mode !== CAMERA_MODE_INSPECT ) {
+      //   this.mode = CAMERA_MODE_FIRST_PERSON;
+      //   const position = new THREE.Vector3();
+      //   const quat = new THREE.Quaternion();
+      //   const scale = new THREE.Vector3();
+      //   this.viewingRig.object3D.updateMatrices();
+      //   this.viewingRig.object3D.matrixWorld.decompose(position, quat, scale);
+      //   position.setFromMatrixPosition(this.viewingCamera.matrixWorld);
+      //   position.y = position.y - 1.6;
+      //   setMatrixWorld(
+      //     this.avatarRig.object3D,
+      //     new THREE.Matrix4().compose(
+      //       position,
+      //       quat,
+      //       scale
+      //     )
+      //   );
+      //   scene.systems["hubs-systems"].characterController.fly = true;
+      //   this.avatarPOV.object3D.updateMatrices();
+      //   setMatrixWorld(this.avatarPOV.object3D, this.viewingCamera.matrixWorld);
+      // }
       if (!this.enteredScene && entered) {
         this.enteredScene = true;
         this.mode = CAMERA_MODE_FIRST_PERSON;
@@ -443,7 +444,6 @@ export class CameraSystem {
 
       if (this.userinput.get(paths.actions.startInspecting) && this.mode !== CAMERA_MODE_INSPECT) {
         const hoverEl = this.interaction.state.rightRemote.hovered || this.interaction.state.leftRemote.hovered;
-
         if (hoverEl) {
           this.inspect(hoverEl, 1.5);
         }
@@ -454,11 +454,13 @@ export class CameraSystem {
 
       if (this.userinput.get(paths.actions.nextCameraMode)) {
         this.nextMode();
+        console.log(this.mode);
       }
 
       this.ensureListenerIsParentedCorrectly(scene);
 
       if (this.mode === CAMERA_MODE_FIRST_PERSON) {
+        this.avatarRig.object3D.visible = false;
         this.viewingCameraRotator.on = false;
         this.avatarRig.object3D.updateMatrices();
         setMatrixWorld(this.viewingRig.object3D, this.avatarRig.object3D.matrixWorld);
@@ -471,17 +473,48 @@ export class CameraSystem {
         }
       } else if (this.mode === CAMERA_MODE_THIRD_PERSON_NEAR || this.mode === CAMERA_MODE_THIRD_PERSON_FAR) {
         if (this.mode === CAMERA_MODE_THIRD_PERSON_NEAR) {
-          translation.makeTranslation(0, 1, 3);
+          translation.makeTranslation(0, 0.5, 2);
         } else {
-          translation.makeTranslation(0, 2, 8);
+          translation.makeTranslation(0, 0.5, 4);
         }
-        translation.makeTranslation(0, 1, 3);
+        this.avatarRig.object3D.visible = true;
+        this.viewingCameraRotator.on = false;
         this.avatarRig.object3D.updateMatrices();
-        this.viewingRig.object3D.matrixWorld.copy(this.avatarRig.object3D.matrixWorld).multiply(translation);
-        setMatrixWorld(this.viewingRig.object3D, this.viewingRig.object3D.matrixWorld);
-        this.avatarPOV.object3D.quaternion.copy(this.viewingCamera.quaternion);
-        this.avatarPOV.object3D.matrixNeedsUpdate = true;
+        setMatrixWorld(this.viewingRig.object3D, this.avatarRig.object3D.matrixWorld);
+
+        this.avatarPOV.object3D.updateMatrices();
+        const newMat = new THREE.Matrix4().copy(this.avatarPOV.object3D.matrixWorld).multiply(translation);
+        setMatrixWorld(this.viewingCamera, newMat);
+
+        this.viewingCamera.children.forEach(obj => {
+          this.avatarRig.object3D.add(obj);
+        });
+        if (!window.avatarTPSUpdated) {
+          window.APP.store.update({
+            profile: {
+              ...window.APP.store.state.profile,
+              ...{
+                avatarId: "3RbAYoq"
+              }
+            }
+          });
+          window.APP.scene.emit("avatar_updated");
+
+          window.avatarTPSUpdated = true;
+        }
       } else if (this.mode === CAMERA_MODE_INSPECT) {
+        // if (!window.changeCameraMode) {
+        //   this.avatarRig.object3D.add(this.viewingRig.object3D);
+        //   this.viewingRig.object3D.position.z = 2;
+        //   window.changeCameraMode = true;
+        // }
+
+        // this.avatarRig.object3D.rotation.set(
+        //   this.viewingCamera.rotation.x,
+        //   this.viewingCamera.rotation.y,
+        //   this.viewingCamera.rotation.z
+        // );
+        this.avatarRig.object3D.visible = true;
         this.avatarPOVRotator.on = false;
         this.viewingCameraRotator.on = false;
         const cameraDelta = this.userinput.get(

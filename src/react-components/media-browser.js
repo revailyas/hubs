@@ -278,6 +278,7 @@ class MediaBrowserContainer extends Component {
   };
 
   showCustomMediaDialog = source => {
+    console.log({ props: this.props });
     const { scene, store, hubChannel } = this.props;
     const isAvatarApiType = source === "avatars";
     this.pushExitMediaBrowserHistory(!isAvatarApiType);
@@ -427,6 +428,28 @@ class MediaBrowserContainer extends Component {
       );
     }
 
+    const demoAvatar = {
+      attributions: {},
+      description: null,
+      gltfs: {
+        avatar: "https://hub.assemblrworld.com/api/v1/avatars/yvGhcJe/avatar.gltf?v=63817056227",
+        base: "https://hub.assemblrworld.com/api/v1/avatars/yvGhcJe/base.gltf?v=63817056227"
+        //avatar: "https://assemblrworld-asset.s3.ap-southeast-1.amazonaws.com/Asset/metaverse/public/man4.glb",
+        //base: "https://assemblrworld-asset.s3.ap-southeast-1.amazonaws.com/Asset/metaverse/public/man4.glb"
+      },
+      id: "yvGhcJe",
+      images: {
+        preview: {
+          height: 1280,
+          url: "https://hub-assemblr-assets.assemblrworld.com/files/c3f7e054-4cd6-4c66-907d-bd462de6ea22.png",
+          width: 720
+        }
+      },
+      name: "Custom Avatar",
+      type: "avatar",
+      url: "https://hub.assemblrworld.com/avatars/yvGhcJe"
+    };
+
     return (
       <MediaBrowser
         browserRef={r => (this.browserDiv = r)}
@@ -509,7 +532,18 @@ class MediaBrowserContainer extends Component {
                   }
                 />
               )}
+
+            {urlSource === "avatars" && (
+              <MediaTile
+                type="avatar"
+                key={`${demoAvatar.id}_-1}`}
+                entry={demoAvatar}
+                processThumbnailUrl={this.processThumbnailUrl}
+                onClick={e => this.handleEntryClicked(e, demoAvatar)}
+              />
+            )}
             {entries.map((entry, idx) => {
+              console.log({ entry, idx });
               const isAvatar = entry.type === "avatar" || entry.type === "avatar_listing";
               const isScene = entry.type === "scene" || entry.type === "scene_listing";
               const onShowSimilar =

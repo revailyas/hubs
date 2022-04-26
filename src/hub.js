@@ -256,7 +256,7 @@ import { ThemeProvider } from "./react-components/styles/theme";
 import { LogMessageType } from "./react-components/room/ChatSidebar";
 import { blrInfoExtractor } from "./integrations/blr";
 import { addMedia } from "./utils/media-utils";
-import { login } from "./integrations/firebase/auth";
+import { checkAuthStatus, login } from "./integrations/firebase/auth";
 import initializeFirebase from "./integrations/firebase/config";
 import { initLocalDatabase } from "./integrations/indexDB";
 
@@ -332,32 +332,40 @@ const history = routerBaseName === "/" ? createMemoryHistory() : createBrowserHi
 window.APP.history = history;
 
 const qsVREntryType = qs.get("vr_entry_type");
+const messageHandler = function(e) {
+  const param = e.data.data;
+  console.log(param);
+  if (e.data.id === "webplayer editor") {
+    if (param !== "close drawer") {
+      const blrID = param.blrpath;
+      const blrPath = blrInfoExtractor(blrID);
 
+      const { entity } = addMedia(blrPath, "#interactable-media", undefined, undefined, false, true);
+      entity.setAttribute("offset-relative-to", {
+        target: "#avatar-pov-node",
+        offset: { x: 0, y: 0, z: -1.5 }
+      });
+    }
+
+    const el = document.getElementById("library-ui-container");
+    el.classList.add("hidden");
+  } else if (e.data.id === "webplayer editor image") {
+    if (param !== "close drawer") {
+      const image = param.thumbnail !== "" ? param.thumbnail : param.file;
+      const { entity } = addMedia(image, "#interactable-media", undefined, undefined, false, true);
+      entity.setAttribute("offset-relative-to", {
+        target: "#avatar-pov-node",
+        offset: { x: 0, y: 0, z: -1.5 }
+      });
+    }
+
+    const el = document.getElementById("library-ui-container-2d");
+    el.classList.add("hidden");
+  }
+};
 function mountUI(props = {}) {
   console.log("Hub opened");
-  window.addEventListener("message", e => {
-    if (e.data.id === "webplayer editor") {
-      const func = function() {
-        const param = e.data.data;
-        if (param !== "close drawer") {
-          console.log({ param });
-
-          const blrID = param.blrpath;
-          const blrPath = blrInfoExtractor(blrID);
-
-          const { entity } = addMedia(blrPath, "#interactable-media", undefined, undefined, false, true);
-          entity.setAttribute("offset-relative-to", {
-            target: "#avatar-pov-node",
-            offset: { x: 0, y: 0, z: -1.5 }
-          });
-        }
-
-        const el = document.getElementById("library-ui-container");
-        el.classList.add("hidden");
-      };
-      executeOnetime(func, "spawnLibrary");
-    }
-  });
+  window.addEventListener("message", messageHandler, false);
 
   const scene = document.querySelector("a-scene");
   const disableAutoExitOnIdle =
@@ -762,6 +770,8 @@ async function handleHubChannelJoined(entryManager, hubChannel, messageDispatch,
         autoLogin(userEmail);
       }
     }
+  } else {
+    checkAuthStatus();
   }
 }
 
@@ -1125,6 +1135,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // This will be run every time the environment is changed (including the first load.)
     remountUI({ environmentSceneLoaded: true });
+
     scene.emit("environment-scene-loaded", model);
 
     // Re-bind the teleporter controls collision meshes in case the scene changed.
@@ -1237,6 +1248,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   })();
 
   APP.retChannel.on("notice", data => {
+    console.log({ retData: data });
     if (data.event === "ret-deploy") {
       onRetDeploy(data);
     }
@@ -1258,6 +1270,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   hubChannel.presence.onLeave(rawOnLeave);
   hubChannel.presence.onSync(() => {
     events.trigger(`hub:sync`, { presence: hubChannel.presence });
+  });
+
+  events.on("*", function(event, data) {
+    console.log(event);
+    console.log(data);
   });
 
   events.on(`hub:join`, ({ key, meta }) => {

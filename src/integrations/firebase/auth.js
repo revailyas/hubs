@@ -22,7 +22,6 @@ const getUserIdFromToken = async token => {
 };
 
 const getUserEmailByToken = async token => {
-  console.log("get user email");
   return await new Promise(async resolve => {
     const userID = await getUserIdFromToken(token);
     if (userID !== null) {
@@ -45,17 +44,26 @@ async function signInWithAuthKey(key) {
   return await new Promise(resolve => {
     firebase
       .auth()
-      .signInWithCustomToken(key)
-      .then(cred => {
-        console.log(cred);
-        if (cred.user) {
-          resolve(cred.user);
-        } else {
-          resolve(null);
-        }
+      .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+      .then(() => {
+        return firebase
+          .auth()
+          .signInWithCustomToken(key)
+          .then(cred => {
+            if (cred.user) {
+              resolve(cred.user);
+            } else {
+              resolve(null);
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          });
       })
-      .catch(err => {
-        console.log(err);
+      .catch(error => {
+        // Handle Errors here.
+        const errorMessage = error.message;
+        console.log(errorMessage);
       });
   });
 }
@@ -79,8 +87,20 @@ const getTokenFromAuthKey = async authKey => {
 
 async function login(authKey) {
   const userToken = await getTokenFromAuthKey(authKey);
-  console.log({ userToken });
   return await signInWithAuthKey(userToken);
+}
+
+async function checkAuthStatus() {
+  firebase.auth().onAuthStateChanged(user => {
+    if (user) {
+      console.log("auth detected");
+      // User logged in already or has just logged in.
+      window.APP.userID = user.uid;
+    } else {
+      console.log("no auth detected");
+      // User not logged in or has just logged out.
+    }
+  });
 }
 
 const getCurrentToken = async () => {
@@ -89,7 +109,6 @@ const getCurrentToken = async () => {
       .auth()
       .currentUser.getIdToken(false)
       .then(token => {
-        console.log(token);
         resolve(token);
       });
   });
@@ -97,4 +116,4 @@ const getCurrentToken = async () => {
 
 window.getCurrentToken = getCurrentToken;
 
-export { getUserEmailByToken, login, getCurrentToken };
+export { getUserEmailByToken, login, getCurrentToken, checkAuthStatus };

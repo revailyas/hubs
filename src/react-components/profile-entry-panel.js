@@ -53,7 +53,7 @@ export default class ProfileEntryPanel extends Component {
 
     const { displayName } = this.props.store.state.profile;
     const { hasChangedName } = this.props.store.state.activity;
-
+    //INI BUAT DISABLE DEFAULT AVATAR PAS MASUK
     const hasChangedNowOrPreviously = hasChangedName || this.state.displayName !== displayName;
     this.props.store.update({
       activity: {

@@ -56,9 +56,9 @@ export const keyboardMouseUserBindings = addSetsToBindings({
     {
       src: {
         w: paths.device.keyboard.key("w"),
-        a: paths.device.keyboard.key("a"),
-        s: paths.device.keyboard.key("s"),
-        d: paths.device.keyboard.key("d")
+        //a: paths.device.keyboard.key("a"),
+        s: paths.device.keyboard.key("s")
+        // d: paths.device.keyboard.key("d")
       },
       dest: { vec2: wasd_vec2 },
       xform: xforms.wasd_to_vec2
@@ -93,9 +93,9 @@ export const keyboardMouseUserBindings = addSetsToBindings({
       xform: xforms.falling
     },
     {
-      src: { value: paths.device.keyboard.key("q") },
+      src: { value: paths.device.keyboard.key("a") },
       dest: { value: paths.actions.snapRotateLeft },
-      xform: xforms.rising
+      xform: xforms.smoothRotating
     },
     {
       src: { value: paths.device.keyboard.key("g") },
@@ -108,9 +108,9 @@ export const keyboardMouseUserBindings = addSetsToBindings({
       xform: xforms.rising
     },
     {
-      src: { value: paths.device.keyboard.key("e") },
+      src: { value: paths.device.keyboard.key("d") },
       dest: { value: paths.actions.snapRotateRight },
-      xform: xforms.rising
+      xform: xforms.smoothRotating
     },
     {
       src: { value: paths.device.keyboard.key("Tab") },

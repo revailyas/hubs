@@ -15,6 +15,7 @@ function ensureAvatarNodes(json) {
 
     // Note: We assume that the first node in the primary scene is the one we care about.
     const originalRoot = json.scenes[json.scene].nodes[0];
+    console.log(originalRoot);
     nodes.push({ name: "LeftEye", extensions: { MOZ_hubs_components: {} } });
     nodes.push({ name: "RightEye", extensions: { MOZ_hubs_components: {} } });
     nodes.push({
@@ -26,6 +27,7 @@ function ensureAvatarNodes(json) {
     nodes.push({ name: "Spine", children: [nodes.length - 1] });
     nodes.push({ name: "Hips", children: [nodes.length - 1] });
     nodes.push({ name: "AvatarRoot", children: [nodes.length - 1] });
+
     json.scenes[json.scene].nodes[0] = nodes.length - 1;
   }
   return json;

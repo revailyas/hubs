@@ -39,6 +39,7 @@ AFRAME.registerSystem("idle-detector", {
   onIdleTimeout() {
     window.dispatchEvent(new CustomEvent("idle_detected"));
   },
+
   tick(time) {
     if (time - this.lastInputCheck < INPUT_CHECK_INTERVAL_MS) return;
 
@@ -51,13 +52,61 @@ AFRAME.registerSystem("idle-detector", {
 
     const characterAcceleration = userinput.get(CHARACTER_ACCELERATION_PATH);
 
+    let clip, actions, mixer;
+    const element = document.querySelector("#avatar-rig .model");
+
+    const mesh = element.object3D;
+    const elComponents = mesh.el.components;
+    if (elComponents.hasOwnProperty("animation-mixer")) {
+      mixer = elComponents["animation-mixer"].mixer;
+    }
+
+    const switchToIdle = function() {
+      if (!mixer) return;
+      clip = mesh.animations.find(({ name }) => name === "Idle");
+      actions = mixer.clipAction(clip);
+      if (actions) {
+        mixer._actions.forEach(item => {
+          if (item._clip.name === "Run") item.weight = 0;
+          if (item._clip.name === "Idle") {
+            item.weight = 1;
+            item.time = 0;
+          }
+        });
+        actions.time = 0;
+        actions.play();
+
+        mixer.update(0.001);
+      }
+    };
+
+    const switchToRun = function() {
+      if (!mixer) return;
+      clip = mesh.animations.find(({ name }) => name === "Run");
+      actions = mixer.clipAction(clip);
+      if (actions) {
+        actions.weight = 1;
+        mixer._actions.forEach(item => {
+          if (item._clip.name === "Idle") item.weight = 0;
+          if (item._clip.name === "Run") {
+            item.weight = 1;
+          }
+        });
+        actions.play();
+        mixer.update(0.001);
+      }
+    };
+
     const active =
       basicActivity ||
       !!(characterAcceleration && characterAcceleration[0]) ||
       !!(characterAcceleration && characterAcceleration[1]);
 
     if (active) {
+      if (mesh.animations.length > 3 && mesh.animations.length < 7) switchToRun();
       this.resetTimeout();
+    } else {
+      if (mesh.animations.length > 3 && mesh.animations.length < 7) switchToIdle();
     }
   },
   remove() {}

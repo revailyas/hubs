@@ -147,6 +147,7 @@ class AvatarEditor extends Component {
     e.preventDefault();
 
     if (this.inputFiles.glb && this.inputFiles.glb instanceof File) {
+      console.log(this.inputFiles.glb);
       const gltfLoader = new THREE.GLTFLoader().register(parser => new GLTFBinarySplitterPlugin(parser));
       const gltfUrl = URL.createObjectURL(this.inputFiles.glb);
       const onProgress = console.log;
@@ -401,6 +402,17 @@ class AvatarEditor extends Component {
           this.inputFiles["glb"] = file;
           URL.revokeObjectURL(this.state.avatar.files["glb"]);
           this.setState({
+            avatar: {
+              ...this.state.avatar,
+              [propName]: "",
+              files: {
+                ...this.state.avatar.files,
+                glb: URL.createObjectURL(file)
+              }
+            },
+            previewGltfUrl: this.getPreviewUrl("")
+          });
+          console.log({
             avatar: {
               ...this.state.avatar,
               [propName]: "",

@@ -30,3 +30,36 @@
     }
 
 }
+
+#library-ui-container-2d {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+    background-color: white;
+    z-index: 999999;
+    pointer-events: fill;
+
+    &.hidden {
+        display: none;
+    }
+
+    .hide-button {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: red;
+        z-index: 999999;
+    }
+
+    iframe {
+        width: 100%;
+        height: 100%;
+    }
+
+}

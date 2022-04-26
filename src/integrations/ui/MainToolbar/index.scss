@@ -1,0 +1,77 @@
+.toolbar-item {
+    width: 48px;
+    height: 71px;
+    padding: 0;
+    position: relative;
+    overflow: visible;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    >span {
+        color: black;
+        margin-top: 8px;
+        margin-bottom: 3px;
+        margin-right: 0;
+        white-space: nowrap;
+        font-size: 10px;
+        font-weight: 900;
+    }
+
+    >.icon-container{
+        width: 48px;
+        height: 48px;
+        max-width: 48px;
+        max-height: 48px;
+        min-width: 48px;
+        min-height: 48px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+    }
+
+    &.reaction {
+        margin-right: -46px;
+    }
+}
+
+
+.separator-toolbar {
+    height: 100%;
+    border: none;
+    border-right: 2px dashed #34446A;
+}
+
+
+
+.ToolbarButton__toolbar-button__3-iHs  {
+    // HIDE DEFAULT REACTION TOOLBAR
+    &.ToolbarButton__accent2__doyFy {
+        opacity: 0;
+    }
+
+    //HIDE DEFAULT SHARE TOOLBAR
+    &.ToolbarButton__accent5__m3aEv {
+        
+        
+        > label {
+            opacity: 0;
+        }
+    }
+
+    //HIDE CHAT TOOLBAR
+    &.ToolbarButton__accent4__2ODn2{
+        opacity: 0;
+    }
+
+   
+}
+
+.AvatarSettingsContent__avatar-preview-container__3jB58 {
+    display: none;
+}
+
+
+
+
+
