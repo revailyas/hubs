@@ -18,8 +18,8 @@ const LibraryUI3D = () => {
     libraryToken !== "" && (
       <div id="library-ui-container" className="hidden">
         <iframe
-          //src="https://production.depbsux1nbfvt.amplifyapp.com/library3d"
-          src={`http://${window.location.hostname}:3002/library3d`}
+          src="https://production.depbsux1nbfvt.amplifyapp.com/library3d"
+          //src={`http://${window.location.hostname}:3002/library3d`}
           frameBorder={"none"}
           onLoad={e => {
             const element = e.target;
@@ -53,8 +53,8 @@ const LibraryUI2D = () => {
     libraryToken !== "" && (
       <div id="library-ui-container-2d" className="hidden">
         <iframe
-          //src="https://production.depbsux1nbfvt.amplifyapp.com/library3d"
-          src={`http://${window.location.hostname}:3002/library2d`}
+          src="https://production.depbsux1nbfvt.amplifyapp.com/library2d"
+          //src={`http://${window.location.hostname}:3002/library2d`}
           frameBorder={"none"}
           onLoad={e => {
             const element = e.target;

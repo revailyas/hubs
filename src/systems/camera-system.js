@@ -6,9 +6,8 @@ import { getBox } from "../utils/auto-box-collider";
 import { isTagged } from "../components/tags";
 import { qsGet } from "../utils/qs_truthy";
 const customFOV = qsGet("fov");
-import { attach, detach } from "three/examples/jsm/utils/SceneUtils";
 //const enableThirdPersonMode = qsTruthy("thirdPerson");
-const enableThirdPersonMode = true;
+//const enableThirdPersonMode = true;
 import { Layers } from "../components/layers";
 
 function getInspectableInHierarchy(el) {
@@ -432,7 +431,7 @@ export class CameraSystem {
       // }
       if (!this.enteredScene && entered) {
         this.enteredScene = true;
-        this.mode = CAMERA_MODE_FIRST_PERSON;
+        this.mode = CAMERA_MODE_THIRD_PERSON_NEAR;
       }
       this.avatarPOVRotator = this.avatarPOVRotator || this.avatarPOV.components["pitch-yaw-rotator"];
       this.viewingCameraRotator = this.viewingCameraRotator || this.viewingCamera.el.components["pitch-yaw-rotator"];

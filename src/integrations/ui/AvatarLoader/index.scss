@@ -1,0 +1,23 @@
+.avatar-loader {
+    position: fixed;
+    bottom: 96px;
+    left: 50%;
+    transform: translate(-50%);
+    z-index: 999;
+    width: 200px;
+    height: 410px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    pointer-events: none;
+
+
+    span {
+        background: rgba(0,0,0,0.5);
+        padding: 10px;
+        border-radius: 12px;
+        color: white;
+    }
+}

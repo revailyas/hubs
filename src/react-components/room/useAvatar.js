@@ -18,6 +18,8 @@ export default function useAvatar() {
       if (window.avatarTPSUpdated && avatarModelEl.object3D.animations.length < 10) {
         setTimeout(() => {
           window.avatarLoaded = true;
+          window.APP.store.update({});
+          window.APP.store.update({});
         }, 3000);
       }
     }

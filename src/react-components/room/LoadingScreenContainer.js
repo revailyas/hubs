@@ -26,7 +26,14 @@ export function LoadingScreenContainer({ onLoaded, scene }) {
         heading: intl.formatMessage({ id: "loading-screen.heading.tip", defaultMessage: "Tip:" }),
         message: intl.formatMessage({
           id: "loading-screen.message.keyboard-controls",
-          defaultMessage: "Press the Q & E keys to turn left and right."
+          defaultMessage: "Press the A & D keys to turn left and right."
+        })
+      },
+      {
+        heading: intl.formatMessage({ id: "loading-screen.heading.tip", defaultMessage: "Tip:" }),
+        message: intl.formatMessage({
+          id: "loading-screen.message.keyboard-controls",
+          defaultMessage: "Press O keys to switch camera mode"
         })
       },
       {

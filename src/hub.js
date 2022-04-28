@@ -334,7 +334,6 @@ window.APP.history = history;
 const qsVREntryType = qs.get("vr_entry_type");
 const messageHandler = function(e) {
   const param = e.data.data;
-  console.log(param);
   if (e.data.id === "webplayer editor") {
     if (param !== "close drawer") {
       const blrID = param.blrpath;

@@ -103,6 +103,7 @@ import {
   SeparatorToolbar,
   ShareScreenToolbar
 } from "../integrations/ui/MainToolbar";
+import AvatarLoader from "../integrations/ui/AvatarLoader";
 
 const avatarEditorDebug = qsTruthy("avatarEditorDebug");
 
@@ -637,8 +638,8 @@ class UIRoot extends Component {
       console.log("Screen sharing enabled.");
     }
 
-    console.log("set user avatar");
-    loadMyAvatar();
+    // console.log("set user avatar");
+    // loadMyAvatar();
   };
 
   attemptLink = async () => {
@@ -1452,6 +1453,8 @@ class UIRoot extends Component {
                       scene={this.props.scene}
                       store={this.props.store}
                     />
+
+                    {!window.avatarLoaded && entered && <AvatarLoader />}
                     {(showRtcDebugPanel || showAudioDebugPanel) && (
                       <RTCDebugPanel
                         history={this.props.history}
@@ -1604,15 +1607,26 @@ class UIRoot extends Component {
                           mediaSearchStore={this.props.mediaSearchStore}
                           showNonHistoriedDialog={this.showNonHistoriedDialog}
                         /> */}
-                        <SeparatorToolbar />
-                        <Place3DToolbar />
-                        <Place2DToolbar />
-                        <PlaceReactionToolbar />
+
+                        {(this.props.hubChannel.can("spawn_and_move_media") ||
+                          this.props.hubChannel.can("spawn_emoji")) && <SeparatorToolbar />}
+
+                        {this.props.hubChannel.can("spawn_and_move_media") &&
+                          window.APP.userID && (
+                            <>
+                              <Place3DToolbar />
+                              <Place2DToolbar />
+                            </>
+                          )}
+
                         {this.props.hubChannel.can("spawn_emoji") && (
-                          <ReactionPopoverContainer
-                            scene={this.props.scene}
-                            initialPresence={getPresenceProfileForSession(this.props.presences, this.props.sessionId)}
-                          />
+                          <>
+                            <PlaceReactionToolbar />
+                            <ReactionPopoverContainer
+                              scene={this.props.scene}
+                              initialPresence={getPresenceProfileForSession(this.props.presences, this.props.sessionId)}
+                            />
+                          </>
                         )}
                       </>
                     )}
@@ -1629,33 +1643,33 @@ class UIRoot extends Component {
                       )}
                   </>
                 }
-                // toolbarRight={
-                //   <>
-                //     {entered &&
-                //       isMobileVR && (
-                //         <ToolbarButton
-                //           icon={<VRIcon />}
-                //           preset="accept"
-                //           label={<FormattedMessage id="toolbar.enter-vr-button" defaultMessage="Enter VR" />}
-                //           onClick={() => exit2DInterstitialAndEnterVR(true)}
-                //         />
-                //       )}
-                //     {entered && (
-                //       <ToolbarButton
-                //         icon={<LeaveIcon />}
-                //         label={<FormattedMessage id="toolbar.leave-room-button" defaultMessage="Leave" />}
-                //         preset="cancel"
-                //         onClick={() => {
-                //           this.showNonHistoriedDialog(LeaveRoomModal, {
-                //             destinationUrl: "/",
-                //             reason: LeaveReason.leaveRoom
-                //           });
-                //         }}
-                //       />
-                //     )}
-                //     <MoreMenuPopoverButton menu={moreMenu} />
-                //   </>
-                // }
+                toolbarRight={
+                  <>
+                    {entered &&
+                      isMobileVR && (
+                        <ToolbarButton
+                          icon={<VRIcon />}
+                          preset="accept"
+                          label={<FormattedMessage id="toolbar.enter-vr-button" defaultMessage="Enter VR" />}
+                          onClick={() => exit2DInterstitialAndEnterVR(true)}
+                        />
+                      )}
+                    {/* {entered && (
+                      <ToolbarButton
+                        icon={<LeaveIcon />}
+                        label={<FormattedMessage id="toolbar.leave-room-button" defaultMessage="Leave" />}
+                        preset="cancel"
+                        onClick={() => {
+                          this.showNonHistoriedDialog(LeaveRoomModal, {
+                            destinationUrl: "/",
+                            reason: LeaveReason.leaveRoom
+                          });
+                        }}
+                      />
+                    )} */}
+                    {!entered && <MoreMenuPopoverButton menu={moreMenu} />}
+                  </>
+                }
               />
             )}
           </div>
