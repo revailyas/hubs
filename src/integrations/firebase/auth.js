@@ -51,6 +51,7 @@ async function signInWithAuthKey(key) {
           .signInWithCustomToken(key)
           .then(cred => {
             if (cred.user) {
+              window.APP.userID = cred.user.uid;
               resolve(cred.user);
             } else {
               resolve(null);

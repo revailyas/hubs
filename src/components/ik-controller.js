@@ -380,7 +380,7 @@ AFRAME.registerComponent("ik-controller", {
 
         head.rotation.x = 0;
         head.rotation.z = 0;
-        //head.position.y = -1.7;
+        head.position.y = -0.2;
         //head.position.y = box.max.y * -1;
 
         window.invRootToChest = invRootToChest;
