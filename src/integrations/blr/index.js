@@ -33,7 +33,6 @@ const blrInfoExtractor = blrID => {
   } else {
     projectPath = "https://asset.asblr.app/assets-2020-12-28/web/" + blrID.split("_")[1] + "/" + blrID + ".blr";
   }
-  console.log({ projectPath });
   return projectPath;
 };
 
@@ -531,9 +530,7 @@ async function parsingZipFile(buffer) {
       try {
         let blrx = await zip.file("blrx").async("arraybuffer");
         resObject.blrx = blrx;
-      } catch (error) {
-        console.log("not contain blrx file");
-      }
+      } catch (error) {}
 
       let tempMetadata = await zip.file("metadata.data").async("string");
       resObject.metadata = JSON.parse(JSON.stringify(eval("(" + tempMetadata + ")")));
@@ -590,11 +587,10 @@ async function downloadBLRObject(projectPath) {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/pblr"
-        },
-        onDownloadProgress: progressEvent => {
-          const percentage = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-          console.log(percentage);
         }
+        // onDownloadProgress: (progressEvent) => {
+        //   const percentage = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+        // }
       })
       .then(async res => {
         const buffer = new Uint8Array(res.data);
@@ -648,14 +644,11 @@ async function loadMaterial(model, objectInfo) {
 function measureRunningTime(name, startTime) {
   const endTime = performance.now();
   const totalTime = endTime - startTime;
-  console.log("steps " + name + " : " + totalTime.toFixed(2) / 1000 + " seconds");
-
   if (!window.totalLoadTime) window.totalLoadTime = 0;
   window.totalLoadTime += totalTime;
 }
 
 async function loadModelToScene(objectInfo, modelID, fromLocal) {
-  console.log({ objectInfo });
   return await new Promise(async resolve => {
     let combinedArray, ab;
     let startTime = performance.now();
@@ -778,11 +771,9 @@ async function loadBLRFileByURL(url) {
     const blrID = getBLRID(url);
     const localFile = await getModelByID(blrID);
     if (localFile != null) {
-      console.log("load data from local");
       data = localFile;
       fromLocal = true;
     } else {
-      console.log("load data from server");
       const buffer = await downloadBLRObject(url);
       data = await parsingZipFile(buffer);
     }
@@ -800,10 +791,8 @@ async function loadBLRFile(blrID) {
     const directory = componentType === "1" ? "UserComponents/" : "PublicComponents";
 
     const downloadPATH = `https://asset.asblr.app/${directory}/${userID}/${blrID}.blr`;
-    console.log({ userID, componentType, downloadPATH });
     const buffer = await downloadBLRObject(downloadPATH);
     const data = await parsingZipFile(buffer);
-    console.log({ data });
 
     const mesh = await loadModelToScene(data);
     loadMaterial(mesh, data);

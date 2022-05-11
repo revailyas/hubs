@@ -8,7 +8,6 @@ const LibraryUI3D = () => {
   useEffect(() => {
     async function func() {
       const token = await getCurrentToken();
-      console.log({ libraryToken: token });
       setLibraryToken(token);
     }
     func();
@@ -43,7 +42,6 @@ const LibraryUI2D = () => {
   useEffect(() => {
     async function func() {
       const token = await getCurrentToken();
-      console.log({ libraryToken: token });
       setLibraryToken(token);
     }
     func();

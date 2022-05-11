@@ -123,7 +123,6 @@ import "./components/action-to-event";
 import "./components/action-to-remove";
 import "./components/emit-scene-event-on-remove";
 import "./components/follow-in-fov";
-import "./components/matrix-auto-update";
 import "./components/clone-media-button";
 import "./components/open-media-button";
 import "./components/refresh-media-button";
@@ -753,7 +752,7 @@ async function handleHubChannelJoined(entryManager, hubChannel, messageDispatch,
     if (userInfo) {
       const userEmail = userInfo.email;
       const cred = store.state.credentials;
-      console.log({ userEmail, hub, cred });
+      //console.log({ userEmail, hub, cred });
       if (userEmail && cred.email) {
         if (userEmail !== cred.email) {
           console.log("need to sign out!!");
