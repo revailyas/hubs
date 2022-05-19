@@ -36,7 +36,7 @@ export function ObjectMenu({
   onToggleLights,
   lightsEnabled
 }) {
-  return (
+  return !window.hideInspectUI ? (
     <>
       <IconButton className={styles.backButton} onClick={onBack}>
         <ChevronBackIcon width={24} height={24} />
@@ -78,7 +78,7 @@ export function ObjectMenu({
         </div>
       </div>
     </>
-  );
+  ) : null;
 }
 
 ObjectMenu.propTypes = {

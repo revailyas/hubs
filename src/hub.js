@@ -588,8 +588,6 @@ async function handleHubChannelJoined(entryManager, hubChannel, messageDispatch,
   const hub = data.hubs[0];
 
   if (qs.get("creator_token")) {
-    // hub.embed_token = qs.get("creator_token");
-    console.log("dapet token");
     store.update({
       creatorAssignmentTokens: [{ hubId: hub.hub_id, creatorAssignmentToken: qs.get("creator_token") }]
     });
@@ -611,7 +609,6 @@ async function handleHubChannelJoined(entryManager, hubChannel, messageDispatch,
     onSendMessage: messageDispatch.dispatch,
     onLoaded: () => store.executeOnLoadActions(scene),
     onMediaSearchResultEntrySelected: (entry, selectAction) => {
-      console.log({ entry, selectAction });
       scene.emit("action_selected_media_result_entry", { entry, selectAction });
     },
     onMediaSearchCancelled: entry => scene.emit("action_media_search_cancelled", entry),
@@ -620,12 +617,9 @@ async function handleHubChannelJoined(entryManager, hubChannel, messageDispatch,
   });
 
   scene.addEventListener("action_selected_media_result_entry", e => {
-    console.log(e);
     const { entry, selectAction } = e.detail;
-    console.log({ entries: entry });
     if ((entry.type !== "scene_listing" && entry.type !== "scene") || selectAction !== "use") return;
     if (!hubChannel.can("update_hub")) return;
-    console.log({ entry, selectAction });
     hubChannel.updateScene(entry.url);
   });
 
@@ -647,7 +641,6 @@ async function handleHubChannelJoined(entryManager, hubChannel, messageDispatch,
       const objectsScene = document.querySelector("#objects-scene");
       const objectsUrl = getReticulumFetchUrl(`/${hub.hub_id}/objects.gltf`);
       const objectsEl = document.createElement("a-entity");
-      console.log({ objectsUrl });
       objectsEl.setAttribute("gltf-model-plus", { src: objectsUrl, useCache: false, inflate: true });
 
       if (!isBotMode) {
@@ -752,7 +745,6 @@ async function handleHubChannelJoined(entryManager, hubChannel, messageDispatch,
     if (userInfo) {
       const userEmail = userInfo.email;
       const cred = store.state.credentials;
-      //console.log({ userEmail, hub, cred });
       if (userEmail && cred.email) {
         if (userEmail !== cred.email) {
           console.log("need to sign out!!");
@@ -929,7 +921,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   scene.addEventListener("scene_media_selected", e => {
     const sceneInfo = e.detail;
-    console.log({ e });
     performConditionalSignIn(
       () => hubChannel.can("update_hub"),
       () => hubChannel.updateScene(sceneInfo),
@@ -1126,7 +1117,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   environmentScene.addEventListener("model-loaded", ({ detail: { model } }) => {
     console.log("Environment scene has loaded");
-    console.log({ model });
     if (!scene.is("entered")) {
       setupLobbyCamera();
     }
@@ -1246,7 +1236,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   })();
 
   APP.retChannel.on("notice", data => {
-    console.log({ retData: data });
     if (data.event === "ret-deploy") {
       onRetDeploy(data);
     }
@@ -1268,11 +1257,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   hubChannel.presence.onLeave(rawOnLeave);
   hubChannel.presence.onSync(() => {
     events.trigger(`hub:sync`, { presence: hubChannel.presence });
-  });
-
-  events.on("*", function(event, data) {
-    console.log(event);
-    console.log(data);
   });
 
   events.on(`hub:join`, ({ key, meta }) => {

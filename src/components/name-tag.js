@@ -95,7 +95,7 @@ AFRAME.registerComponent("name-tag", {
       }
       this.wasTalking = this.isTalking;
       this.isTalking = this.audioAnalyzer.avatarIsTalking;
-
+      //console.log(this);
       if (this.shouldBeVisible) {
         this.nametag.visible = true;
         if (this.isTalking !== this.wasTalking) {

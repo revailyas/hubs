@@ -72,12 +72,10 @@ AFRAME.registerComponent("media-loader", {
     this.handleLinkedElRemoved = this.handleLinkedElRemoved.bind(this);
     this.refresh = this.refresh.bind(this);
     this.animating = false;
-    console.log({ context: this });
     try {
       NAF.utils
         .getNetworkedEntity(this.el)
         .then(networkedEl => {
-          console.log({ networkedEl });
           this.networkedEl = networkedEl;
         })
         .catch(() => {}); //ignore exception, entity might not be networked
@@ -414,8 +412,6 @@ AFRAME.registerComponent("media-loader", {
         this.el.emit("media_refreshed", { src, raw: accessibleUrl, contentType });
       }
 
-      console.log({ contentType });
-
       if (
         contentType.startsWith("video/") ||
         contentType.startsWith("audio/") ||
@@ -542,7 +538,6 @@ AFRAME.registerComponent("media-loader", {
         contentType.includes("x-zip-compressed") ||
         contentType.startsWith("model/gltf")
       ) {
-        console.log({ datas: this.data });
         this.el.removeAttribute("media-image");
         this.el.removeAttribute("media-video");
         this.el.removeAttribute("audio-zone-source");
@@ -625,7 +620,6 @@ AFRAME.registerComponent("media-loader", {
           this.el.setAttribute("position-at-border__freeze-unprivileged", { isFlat: true });
         }
       } else if (contentType === "binary/octet-stream") {
-        console.log(this.data);
         console.log("load blr object");
         const model = await loadBLRFileByURL(src);
         this.el.addEventListener(
@@ -657,7 +651,6 @@ AFRAME.registerComponent("media-loader", {
         const divValue = largestSize / expectedSize;
         model.scale.multiplyScalar(1 / divValue);
 
-        console.log({ modelWidth, modelHeight });
         if (this.data.isFirstLoadBlr === true) {
           console.log("first load blr");
         }

@@ -152,6 +152,8 @@ export const CAMERA_MODE_THIRD_PERSON_NEAR = 1;
 export const CAMERA_MODE_THIRD_PERSON_FAR = 2;
 export const CAMERA_MODE_INSPECT = 3;
 export const CAMERA_MODE_SCENE_PREVIEW = 4;
+let tpsCameraZoom = 2;
+let tpsCameraHeight = 0.5;
 
 const NEXT_MODES = {
   [CAMERA_MODE_FIRST_PERSON]: CAMERA_MODE_THIRD_PERSON_NEAR,
@@ -264,6 +266,11 @@ export class CameraSystem {
   }
 
   inspect(el, distanceMod, fireChangeEvent = true) {
+    // if (this.mode === CAMERA_MODE_INSPECT) {
+    //   this.uninspect();
+    //   return;
+    // }
+
     const { inspectable, pivot } = getInspectableAndPivot(el);
 
     this.verticalDelta = 0;
@@ -283,12 +290,14 @@ export class CameraSystem {
 
     const camera = scene.is("vr-mode") ? scene.renderer.xr.getCamera() : scene.camera;
     this.snapshot.mask = camera.layers.mask;
-    if (!this.lightsEnabled) {
-      this.hideEverythingButThisObject(inspectable);
-    } else {
-      camera.layers.disable(Layers.CAMERA_LAYER_FIRST_PERSON_ONLY);
-      camera.layers.enable(Layers.CAMERA_LAYER_THIRD_PERSON_ONLY);
-    }
+    // if (!this.lightsEnabled) {
+    //   this.hideEverythingButThisObject(inspectable);
+    // } else {
+    //   camera.layers.disable(Layers.CAMERA_LAYER_FIRST_PERSON_ONLY);
+    //   camera.layers.enable(Layers.CAMERA_LAYER_THIRD_PERSON_ONLY);
+    // }
+    //camera.layers.disable(Layers.CAMERA_LAYER_FIRST_PERSON_ONLY);
+    //camera.layers.enable(Layers.CAMERA_LAYER_THIRD_PERSON_ONLY);
 
     this.viewingCamera.updateMatrices();
     this.snapshot.matrixWorld.copy(this.viewingRig.object3D.matrixWorld);
@@ -303,14 +312,19 @@ export class CameraSystem {
     }
 
     this.ensureListenerIsParentedCorrectly(scene);
-
-    moveRigSoCameraLooksAtPivot(
-      this.viewingRig.object3D,
-      this.viewingCamera,
-      this.inspectable,
-      this.pivot,
-      distanceMod || 1
-    );
+    if (el.id !== "avatar-rig") {
+      //DISABLE TO PREVENT CAMERA POSITION CHANGE TO AVATAR
+      moveRigSoCameraLooksAtPivot(
+        this.viewingRig.object3D,
+        this.viewingCamera,
+        this.inspectable,
+        this.pivot,
+        distanceMod || 1
+      );
+      window.hideInspectUI = false;
+    } else {
+      window.hideInspectUI = true;
+    }
 
     if (fireChangeEvent) {
       scene.emit("inspect-target-changed");
@@ -441,6 +455,17 @@ export class CameraSystem {
       this.userinput = this.userinput || scene.systems.userinput;
       this.interaction = this.interaction || scene.systems.interaction;
 
+      const cameraZoomRange = this.userinput.get(paths.actions.dCharSpeed);
+      if (Math.abs(cameraZoomRange) !== 0) {
+        if (cameraZoomRange < 0 && tpsCameraZoom < 4) {
+          tpsCameraZoom += 0.5;
+          tpsCameraHeight += 0.1;
+        } else if (cameraZoomRange > 0 && tpsCameraZoom > 1) {
+          tpsCameraZoom -= 0.5;
+          tpsCameraHeight -= 0.1;
+        }
+      }
+
       if (this.userinput.get(paths.actions.startInspecting) && this.mode !== CAMERA_MODE_INSPECT) {
         const hoverEl = this.interaction.state.rightRemote.hovered || this.interaction.state.leftRemote.hovered;
         if (hoverEl) {
@@ -453,7 +478,6 @@ export class CameraSystem {
 
       if (this.userinput.get(paths.actions.nextCameraMode)) {
         this.nextMode();
-        console.log(this.mode);
       }
 
       this.ensureListenerIsParentedCorrectly(scene);
@@ -472,7 +496,7 @@ export class CameraSystem {
         }
       } else if (this.mode === CAMERA_MODE_THIRD_PERSON_NEAR || this.mode === CAMERA_MODE_THIRD_PERSON_FAR) {
         if (this.mode === CAMERA_MODE_THIRD_PERSON_NEAR) {
-          translation.makeTranslation(0, 0.5, 2);
+          translation.makeTranslation(0, tpsCameraHeight, tpsCameraZoom);
         } else {
           translation.makeTranslation(0, 0.5, 4);
         }

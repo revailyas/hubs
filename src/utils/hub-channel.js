@@ -252,7 +252,6 @@ export default class HubChannel extends EventTarget {
 
   sendObjectSpawnedEvent = objectType => {
     console.log("spawn object");
-    console.log({ objectType });
     if (!this.channel) {
       console.warn("No phoenix channel initialized before object spawn.");
       return;

@@ -58,7 +58,7 @@ export const keyboardMouseUserBindings = addSetsToBindings({
         w: paths.device.keyboard.key("w"),
         //a: paths.device.keyboard.key("a"),
         s: paths.device.keyboard.key("s")
-        // d: paths.device.keyboard.key("d")
+        //d: paths.device.keyboard.key("d")
       },
       dest: { vec2: wasd_vec2 },
       xform: xforms.wasd_to_vec2
@@ -93,7 +93,7 @@ export const keyboardMouseUserBindings = addSetsToBindings({
       xform: xforms.falling
     },
     {
-      src: { value: paths.device.keyboard.key("a") },
+      src: { value: paths.device.keyboard.key("q") },
       dest: { value: paths.actions.snapRotateLeft },
       xform: xforms.smoothRotating
     },
@@ -108,7 +108,7 @@ export const keyboardMouseUserBindings = addSetsToBindings({
       xform: xforms.rising
     },
     {
-      src: { value: paths.device.keyboard.key("d") },
+      src: { value: paths.device.keyboard.key("e") },
       dest: { value: paths.actions.snapRotateRight },
       xform: xforms.smoothRotating
     },
@@ -355,26 +355,27 @@ export const keyboardMouseUserBindings = addSetsToBindings({
       },
       xform: xforms.rising
     },
-    {
-      src: {
-        value: paths.device.mouse.buttonRight
-      },
-      dest: {
-        value: paths.actions.startGazeTeleport
-      },
-      xform: xforms.rising,
-      priority: 100
-    },
-    {
-      src: {
-        value: paths.device.mouse.buttonRight
-      },
-      dest: {
-        value: paths.actions.stopGazeTeleport
-      },
-      xform: xforms.falling,
-      priority: 100
-    },
+    //DISABLED TELEPORT
+    // {
+    //   src: {
+    //     value: paths.device.mouse.buttonRight
+    //   },
+    //   dest: {
+    //     value: paths.actions.startGazeTeleport
+    //   },
+    //   xform: xforms.rising,
+    //   priority: 100
+    // },
+    // {
+    //   src: {
+    //     value: paths.device.mouse.buttonRight
+    //   },
+    //   dest: {
+    //     value: paths.actions.stopGazeTeleport
+    //   },
+    //   xform: xforms.falling,
+    //   priority: 100
+    // },
     {
       src: { value: paths.device.keyboard.key("o") },
       dest: { value: paths.actions.nextCameraMode },
@@ -471,8 +472,14 @@ export const keyboardMouseUserBindings = addSetsToBindings({
       dest: { value: paths.actions.spawnEmoji6 },
       xform: xforms.rising
     },
+    //CHANGE INPECT BUTTON
+    // {
+    //   src: { value: paths.device.keyboard.key("i") },
+    //   dest: { value: paths.actions.startInspectingSelf },
+    //   xform: xforms.rising
+    // }
     {
-      src: { value: paths.device.keyboard.key("i") },
+      src: { value: paths.device.mouse.buttonRight },
       dest: { value: paths.actions.startInspectingSelf },
       xform: xforms.rising
     }

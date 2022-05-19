@@ -1,9 +1,9 @@
 import { waitForDOMContentLoaded } from "../utils/async-utils";
 const { Vector3, Quaternion, Matrix4, Euler } = THREE;
 
-function miliSecondDiff(date1, date2) {
-  return Math.abs(date1.getTime() - date2.getTime());
-}
+// function miliSecondDiff(date1, date2) {
+//   return Math.abs(date1.getTime() - date2.getTime());
+// }
 
 function quaternionAlmostEquals(epsilon, u, v) {
   // Note: q and -q represent same rotation
@@ -177,104 +177,203 @@ AFRAME.registerComponent("ik-controller", {
       return;
     }
 
-    AFRAME.scenes[0].object3D.children.forEach(child => {
-      if (child.el && child.el.id.includes("naf-")) {
-        if (!window.APP[child.el.id]) {
-          window.APP[child.el.id] = {
-            position: {
-              x: child.position.x,
-              y: child.position.y,
-              z: child.position.z
-            }
-          };
-        } else {
-          const currentPos = window.APP[child.el.id];
-          const element = document.getElementById(child.el.id).children[4];
-          if (element) {
-            const mesh = document.getElementById(child.el.id).children[4].object3D;
-            let mixer, clip, actions;
-            try {
-              mixer = document.getElementById(child.el.id).children[4].components["animation-mixer"].mixer;
-            } catch (error) {}
+    // AFRAME.scenes[0].object3D.children.forEach(child => {
+    //   if (child.el && child.el.id.includes("naf-")) {
+    //     const moveForwards = child.el.components["networked-avatar"].previousOldData.move_forward;
+    //     const moveBackwards = child.el.components["networked-avatar"].previousOldData.move_backward;
+    //     let mixer, clip, actions, mesh;
+    //     const element = document.getElementById(child.el.id).children[4];
+    //     if (element) {
+    //       mesh = document.getElementById(child.el.id).children[4].object3D;
+    //       try {
+    //         mixer = document.getElementById(child.el.id).children[4].components["animation-mixer"].mixer;
+    //       } catch (error) {}
+    //     }
+    //     const switchToIdle = function() {
+    //       clip = mesh.animations.find(({ name }) => name === "Idle");
+    //       actions = mixer.clipAction(clip);
+    //       if (actions) {
+    //         mixer._actions.forEach(item => {
+    //           if (item._clip.name === "Run") item.weight = 0;
+    //           if (item._clip.name === "Idle") {
+    //             item.weight = 1;
+    //             item.time = 0;
+    //           }
+    //         });
+    //         actions.time = 0;
+    //         actions.play();
 
-            const valueDifference = function(a, b) {
-              return Math.abs(a - b);
-            };
+    //         mixer.update(0.001);
+    //       }
+    //     };
 
-            const xDifference = valueDifference(parseFloat(currentPos.position.x), parseFloat(child.position.x));
-            const zDifference = valueDifference(parseFloat(currentPos.position.z), parseFloat(child.position.z));
-            if (
-              (currentPos.position.x !== child.position.x || currentPos.position.z !== child.position.z) &&
-              xDifference < 1 &&
-              zDifference < 1
-            ) {
-              child.moving = true;
-              window.APP[child.el.id] = {
-                position: {
-                  x: child.position.x,
-                  y: child.position.y,
-                  z: child.position.z
-                }
-              };
-            } else {
-              child.moving = false;
-            }
+    //     const switchToRun = function(speed) {
+    //       //console.log("run" + " " + speed);
+    //       clip = mesh.animations.find(({ name }) => name === "Run");
+    //       actions = mixer.clipAction(clip);
+    //       if (actions) {
+    //         actions.weight = 1;
+    //         mixer._actions.forEach(item => {
+    //           if (item._clip.name === "Idle") item.weight = 0;
+    //           if (item._clip.name === "Run") {
+    //             item.weight = 1;
+    //             item.timeScale = speed;
+    //           }
+    //         });
+    //         actions.play();
+    //         child.lastMove = new Date();
+    //         mixer.update(0.001);
+    //       }
+    //     };
+    //     try {
+    //       if (moveForwards || moveBackwards) {
+    //         const speed = moveForwards ? 1 : -1;
+    //         switchToRun(speed);
+    //       } else {
+    //         if (child.lastMove) {
+    //           const lastMove = child.lastMove;
+    //           const now = new Date();
+    //           const switchHandler = miliSecondDiff(lastMove, now);
+    //           if (switchHandler > 50) {
+    //             switchToIdle();
+    //           }
+    //         } else {
+    //           switchToIdle();
+    //         }
+    //       }
+    //     } catch (error) {
+    //       console.log(error);
+    //     }
 
-            const switchToIdle = function() {
-              clip = mesh.animations.find(({ name }) => name === "Idle");
-              actions = mixer.clipAction(clip);
-              if (actions) {
-                mixer._actions.forEach(item => {
-                  if (item._clip.name === "Run") item.weight = 0;
-                  if (item._clip.name === "Idle") {
-                    item.weight = 1;
-                    item.time = 0;
-                  }
-                });
-                actions.time = 0;
-                actions.play();
+    //     // if (!window.APP[child.el.id]) {
+    //     //   window.APP[child.el.id] = {
+    //     //     position: {
+    //     //       x: child.position.x,
+    //     //       y: child.position.y,
+    //     //       z: child.position.z
+    //     //     },
+    //     //     rotation: {
+    //     //       x: child.rotation.x,
+    //     //       y: child.rotation.y,
+    //     //       z: child.rotation.z
+    //     //     }
+    //     //   };
+    //     // } else {
+    //     //   const currentTransform = window.APP[child.el.id];
+    //     //   const element = document.getElementById(child.el.id).children[4];
+    //     //   if (element) {
+    //     //     const mesh = document.getElementById(child.el.id).children[4].object3D;
 
-                mixer.update(0.001);
-              }
-            };
+    //     //     try {
+    //     //       mixer = document.getElementById(child.el.id).children[4].components["animation-mixer"].mixer;
+    //     //     } catch (error) {}
 
-            const switchToRun = function() {
-              clip = mesh.animations.find(({ name }) => name === "Run");
-              actions = mixer.clipAction(clip);
-              if (actions) {
-                actions.weight = 1;
-                mixer._actions.forEach(item => {
-                  if (item._clip.name === "Idle") item.weight = 0;
-                  if (item._clip.name === "Run") {
-                    item.weight = 1;
-                  }
-                });
-                actions.play();
-                child.lastMove = new Date();
-                mixer.update(0.001);
-              }
-            };
+    //     //     const currentRotation = new Vector3(
+    //     //       currentTransform.rotation.x,
+    //     //       currentTransform.rotation.y,
+    //     //       currentTransform.rotation.z
+    //     //     );
+    //     //     const currentPosition = new Vector3(
+    //     //       currentTransform.position.x,
+    //     //       currentTransform.position.y,
+    //     //       currentTransform.position.z
+    //     //     );
+    //     //     const newPos = new Vector3(
+    //     //       child.position.x - currentPosition.x,
+    //     //       child.position.y - currentPosition.y,
+    //     //       child.position.z - currentPosition.z
+    //     //     );
+    //     //     const movement = new Vector3(
+    //     //       currentRotation.x * newPos.x,
+    //     //       currentRotation.y * newPos.y,
+    //     //       currentRotation.z * newPos.z
+    //     //     );
 
-            try {
-              if (child.moving === true) {
-                switchToRun();
-              } else {
-                if (child.lastMove) {
-                  const lastMove = child.lastMove;
-                  const now = new Date();
-                  const switchHandler = miliSecondDiff(lastMove, now);
-                  if (switchHandler > 50) {
-                    switchToIdle();
-                  }
-                } else {
-                  switchToIdle();
-                }
-              }
-            } catch (error) {}
-          }
-        }
-      }
-    });
+    //     //     let moveForward = false;
+    //     //     //moveBackward = false;
+    //     //     const currentRotationY = child.rotation.y;
+
+    //     //     if (movement.z !== 0) {
+    //     //       moveForward = true;
+    //     //       //console.log(movement.z + " : " + currentRotationY);
+    //     //       //console.log(child.el.components['networked-avatar'])
+
+    //     //     }
+
+    //     //     const currentRotationsX = child.rotation.x;
+    //     //     const currentRotationsY = child.rotation.y;
+    //     //     const currentRotationsZ = child.rotation.z;
+
+    //     //     window.APP[child.el.id] = {
+    //     //       position: {
+    //     //         x: child.position.x,
+    //     //         y: child.position.y,
+    //     //         z: child.position.z
+    //     //       },
+    //     //       rotation: {
+    //     //         x: currentRotationsX,
+    //     //         y: currentRotationsY,
+    //     //         z: currentRotationsZ
+    //     //       }
+    //     //     };
+
+    //     //     const switchToIdle = function() {
+    //     //       clip = mesh.animations.find(({ name }) => name === "Idle");
+    //     //       actions = mixer.clipAction(clip);
+    //     //       if (actions) {
+    //     //         mixer._actions.forEach(item => {
+    //     //           if (item._clip.name === "Run") item.weight = 0;
+    //     //           if (item._clip.name === "Idle") {
+    //     //             item.weight = 1;
+    //     //             item.time = 0;
+    //     //           }
+    //     //         });
+    //     //         actions.time = 0;
+    //     //         actions.play();
+
+    //     //         mixer.update(0.001);
+    //     //       }
+    //     //     };
+
+    //     //     const switchToRun = function(speed) {
+    //     //       clip = mesh.animations.find(({ name }) => name === "Run");
+    //     //       actions = mixer.clipAction(clip);
+    //     //       if (actions) {
+    //     //         actions.weight = 1;
+    //     //         mixer._actions.forEach(item => {
+    //     //           if (item._clip.name === "Idle") item.weight = 0;
+    //     //           if (item._clip.name === "Run") {
+    //     //             item.weight = 1;
+    //     //             item.timeScale = speed;
+    //     //           }
+    //     //         });
+    //     //         actions.play();
+    //     //         child.lastMove = new Date();
+    //     //         mixer.update(0.001);
+    //     //       }
+    //     //     };
+
+    //     //     try {
+    //     //       if (moveForward) {
+    //     //         const speed = moveForward ? 1 : -1;
+    //     //         switchToRun(speed);
+    //     //       } else {
+    //     //         if (child.lastMove) {
+    //     //           const lastMove = child.lastMove;
+    //     //           const now = new Date();
+    //     //           const switchHandler = miliSecondDiff(lastMove, now);
+    //     //           if (switchHandler > 50) {
+    //     //             switchToIdle();
+    //     //           }
+    //     //         } else {
+    //     //           switchToIdle();
+    //     //         }
+    //     //       }
+    //     //     } catch (error) {}
+    //     //   }
+    //     // }
+    //   }
+    // });
 
     const root = this.ikRoot.el.object3D;
     root.updateMatrices();

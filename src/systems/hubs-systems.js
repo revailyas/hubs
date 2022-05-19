@@ -35,6 +35,10 @@ import { GainSystem } from "./audio-gain-system";
 import { EnvironmentSystem } from "./environment-system";
 import { NameTagVisibilitySystem } from "./name-tag-visibility-system";
 
+function miliSecondDiff(date1, date2) {
+  return Math.abs(date1.getTime() - date2.getTime());
+}
+
 AFRAME.registerSystem("hubs-systems", {
   init() {
     waitForDOMContentLoaded().then(() => {
@@ -127,6 +131,84 @@ AFRAME.registerSystem("hubs-systems", {
 
     // We run this late in the frame so that its the last thing to have an opinion about the scale of an object
     this.boneVisibilitySystem.tick();
+    AFRAME.scenes[0].object3D.children.forEach(child => {
+      if (
+        child.el &&
+        child.el.id.includes("naf-") &&
+        child.el.components &&
+        child.el.components.hasOwnProperty("networked-avatar")
+      ) {
+        const moveForwards = child.el.components["networked-avatar"].data.move_forward;
+        const moveBackwards = child.el.components["networked-avatar"].data.move_backward;
+        let mixer, clip, actions, mesh;
+        const element = document.getElementById(child.el.id).children[4];
+        if (element) {
+          mesh = document.getElementById(child.el.id).children[4].object3D;
+          try {
+            mixer = document.getElementById(child.el.id).children[4].components["animation-mixer"].mixer;
+          } catch (error) {
+            return;
+          }
+        }
+        const switchToIdle = function() {
+          clip = mesh.animations.find(({ name }) => name === "Idle");
+          actions = mixer.clipAction(clip);
+          if (actions) {
+            mixer._actions.forEach(item => {
+              if (item._clip.name === "Run") item.weight = 0;
+              if (item._clip.name === "Idle") {
+                item.weight = 1;
+              }
+            });
+            if (window[`lastAnimation${child.el.id}`] === "Run") actions.time = 0;
+
+            actions.play();
+
+            mixer.update(0.001);
+            window[`lastAnimation${child.el.id}`] = "Idle";
+          }
+        };
+
+        const switchToRun = function(speed) {
+          window[`lastAnimation${child.el.id}`] = "Run";
+          //console.log("run" + " " + speed);
+          clip = mesh.animations.find(({ name }) => name === "Run");
+          actions = mixer.clipAction(clip);
+          if (actions) {
+            actions.weight = 1;
+            mixer._actions.forEach(item => {
+              if (item._clip.name === "Idle") item.weight = 0;
+              if (item._clip.name === "Run") {
+                item.weight = 1;
+                item.timeScale = speed;
+              }
+            });
+            actions.play();
+            child.lastMove = new Date();
+            mixer.update(0.001);
+          }
+        };
+        try {
+          if (moveForwards || moveBackwards) {
+            const speed = moveForwards ? 1 : -1;
+            switchToRun(speed);
+          } else {
+            if (child.lastMove) {
+              const lastMove = child.lastMove;
+              const now = new Date();
+              const switchHandler = miliSecondDiff(lastMove, now);
+              if (switchHandler > 50) {
+                switchToIdle();
+              }
+            } else {
+              switchToIdle();
+            }
+          }
+        } catch (error) {
+          return;
+        }
+      }
+    });
   },
 
   remove() {

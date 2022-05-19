@@ -62,6 +62,9 @@ AFRAME.registerSystem("idle-detector", {
     }
 
     const switchToIdle = function() {
+      //mesh.parent.el.setAttribute("networked-avatar", { move_forward: false, move_backward: false });
+      //elComponents["networked-avatar"].data.move_forward = false;
+      //mesh.parent.el.components["networked-avatar"].data.move_forward = false;
       if (!mixer) return;
       clip = mesh.animations.find(({ name }) => name === "Idle");
       actions = mixer.clipAction(clip);
@@ -70,17 +73,24 @@ AFRAME.registerSystem("idle-detector", {
           if (item._clip.name === "Run") item.weight = 0;
           if (item._clip.name === "Idle") {
             item.weight = 1;
-            item.time = 0;
           }
         });
-        actions.time = 0;
+        if (window[`myLastAnimation`] === "Run") actions.time = 0;
+
         actions.play();
 
         mixer.update(0.001);
+        window[`myLastAnimation`] = "Idle";
       }
     };
 
-    const switchToRun = function() {
+    const switchToRun = function(speed) {
+      window[`myLastAnimation`] = "Run";
+      // if (speed === 1) {
+      //   mesh.parent.el.setAttribute("networked-avatar", { move_forward: true });
+      // } else if (speed === -1) {
+      //   mesh.parent.el.setAttribute("networked-avatar", { move_backward: true });
+      // }
       if (!mixer) return;
       clip = mesh.animations.find(({ name }) => name === "Run");
       actions = mixer.clipAction(clip);
@@ -90,6 +100,7 @@ AFRAME.registerSystem("idle-detector", {
           if (item._clip.name === "Idle") item.weight = 0;
           if (item._clip.name === "Run") {
             item.weight = 1;
+            item.timeScale = speed;
           }
         });
         actions.play();
@@ -103,7 +114,17 @@ AFRAME.registerSystem("idle-detector", {
       !!(characterAcceleration && characterAcceleration[1]);
 
     if (active) {
-      if (mesh.animations.length > 3 && mesh.animations.length < 7) switchToRun();
+      if (mesh.animations.length > 3 && mesh.animations.length < 7) {
+        if (characterAcceleration[1] > 0) {
+          switchToRun(1);
+        } else if (characterAcceleration[1] < 0) {
+          switchToRun(-1);
+        } else if (characterAcceleration[0] > 0) {
+          //move right
+        } else if (characterAcceleration[0] < 0) {
+          //move left
+        }
+      }
       this.resetTimeout();
     } else {
       if (mesh.animations.length > 3 && mesh.animations.length < 7) switchToIdle();

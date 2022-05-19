@@ -864,7 +864,6 @@ class UIRoot extends Component {
               if (creds && creds.email) {
                 const findLogin = setInterval(() => {
                   const form = document.getElementById("id_0");
-                  console.log(form);
                   form.value = creds.email;
                   form.click();
                   const buttonList = document.getElementsByTagName("button");

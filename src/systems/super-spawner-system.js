@@ -26,7 +26,6 @@ export class SuperSpawnerSystem {
 
   performSpawn(state, grabPath, userinput, superSpawner) {
     const data = superSpawner.data;
-    console.log({ data });
     const spawnedEntity = addMedia(
       data.src,
       data.template,

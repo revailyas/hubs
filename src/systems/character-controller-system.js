@@ -262,8 +262,30 @@ export class CharacterControllerSystem {
       if (characterAcceleration) {
         if (characterAcceleration[0] !== 0 || characterAcceleration[1] !== 0) {
           this.avatarRig.object3D.moving = true;
+          if (characterAcceleration[1] > 0) {
+            this.avatarRig.setAttribute("networked-avatar", { move_forward: true });
+          } else if (characterAcceleration[1] < 0) {
+            this.avatarRig.setAttribute("networked-avatar", { move_backward: true });
+          } else if (characterAcceleration[0] > 0) {
+            this.avatarRig.setAttribute("networked-avatar", { move_right: true });
+          } else if (characterAcceleration[0] < 0) {
+            this.avatarRig.setAttribute("networked-avatar", { move_left: true });
+          } else {
+            this.avatarRig.setAttribute("networked-avatar", {
+              move_backward: false,
+              move_forward: false,
+              move_left: false,
+              move_right: false
+            });
+          }
         } else {
           this.avatarRig.object3D.moving = false;
+          this.avatarRig.setAttribute("networked-avatar", {
+            move_backward: false,
+            move_forward: false,
+            move_left: false,
+            move_right: false
+          });
         }
 
         const zCharacterAcceleration = -1 * characterAcceleration[1];
@@ -278,6 +300,9 @@ export class CharacterControllerSystem {
                 ? Math.min(0, zCharacterAcceleration)
                 : zCharacterAcceleration)
         );
+      } else {
+        this.avatarRig.object3D.moving = false;
+        this.avatarRig.setAttribute("networked-avatar", { move_backward: false, move_forward: false });
       }
       const lerpC = vrMode ? 0 : 0.85; // TODO: To support drifting ("ice skating"), motion needs to keep initial direction
       this.nextRelativeMotion.copy(this.relativeMotion).multiplyScalar(lerpC);

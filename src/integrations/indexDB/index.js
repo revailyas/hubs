@@ -40,7 +40,7 @@ export async function initLocalDatabase() {
         console.log("db ready");
         window.APP.Storage = event.target.result;
 
-        console.log("is DB Updated : " + isUpdated);
+        //console.log("is DB Updated : " + isUpdated);
 
         if (isUpdated) {
           clearObjectStore("Models", window.APP.Storage);
@@ -76,12 +76,12 @@ export async function insertModel(model) {
   const query = models.put(model, model.id);
 
   query.onsuccess = function(event) {
-    console.log(event);
+    //console.log(event);
   };
 
   // handle the error case
   query.onerror = function(event) {
-    console.log(event.target.errorCode);
+    //console.log(event.target.errorCode);
   };
 
   // close the database once the
@@ -99,12 +99,12 @@ export async function removeModel(model) {
   const query = models.delete(model.id);
 
   query.onsuccess = function(event) {
-    console.log(event);
+    //console.log(event);
   };
 
   // handle the error case
   query.onerror = function(event) {
-    console.log(event.target.errorCode);
+    //console.log(event.target.errorCode);
   };
 
   // close the database once the
@@ -122,11 +122,11 @@ export async function insertProject(project) {
   const query = projects.put(project, project.id);
 
   query.onsuccess = function(event) {
-    console.log(event);
+    //(event);
   };
 
   query.onerror = function(event) {
-    console.log(event.target.errorCode);
+    //console.log(event.target.errorCode);
   };
 }
 
@@ -138,14 +138,14 @@ export async function insertImage(image) {
   const query = images.put(image, image.id);
 
   query.onsuccess = function(event) {
-    console.log("save image to local success");
-    console.log(event);
+    //console.log("save image to local success");
+    //console.log(event);
   };
 
   // handle the error case
   query.onerror = function(event) {
-    console.log("save image to local failed");
-    console.log(event.target.errorCode);
+    //console.log("save image to local failed");
+    //console.log(event.target.errorCode);
   };
 
   // close the database once the
@@ -162,10 +162,10 @@ export async function getModelByID(id) {
       const store = txn.objectStore("Models");
 
       const query = store.get(id);
-      console.log(query);
+      //console.log(query);
       query.onsuccess = event => {
         if (!event.target.result) {
-          console.log(`The model with ${id} not found`);
+          //console.log(`The model with ${id} not found`);
           resolve(null);
         } else {
           const buffer = event.target.result;
@@ -190,10 +190,9 @@ export async function getProjectByID(id) {
       const store = txn.objectStore("Projects");
 
       const query = store.get(id);
-      console.log(query);
       query.onsuccess = event => {
         if (!event.target.result) {
-          console.log(`The project with ${id} not found`);
+          //console.log(`The project with ${id} not found`);
           resolve(null);
         } else {
           const buffer = event.target.result;
@@ -202,7 +201,7 @@ export async function getProjectByID(id) {
       };
 
       query.onerror = event => {
-        console.log(event.target.errorCode);
+        //console.log(event.target.errorCode);
         resolve(null);
       };
     } catch (error) {
@@ -216,21 +215,20 @@ export async function getImageByID(id) {
     try {
       const txn = window.APP.Storage.transaction("Images", "readonly");
       const store = txn.objectStore("Images");
-      console.log(store);
       const query = store.get(id);
       query.onsuccess = event => {
         if (!event.target.result) {
-          console.log(`The images with ${id} not found`);
+          //console.log(`The images with ${id} not found`);
           resolve(null);
         } else {
           const buffer = event.target.result;
-          console.log(buffer);
+          //console.log(buffer);
           resolve(buffer);
         }
       };
 
       query.onerror = event => {
-        console.log(event.target.errorCode);
+        //console.log(event.target.errorCode);
         resolve(null);
       };
     } catch (error) {

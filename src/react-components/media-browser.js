@@ -278,7 +278,6 @@ class MediaBrowserContainer extends Component {
   };
 
   showCustomMediaDialog = source => {
-    console.log({ props: this.props });
     const { scene, store, hubChannel } = this.props;
     const isAvatarApiType = source === "avatars";
     this.pushExitMediaBrowserHistory(!isAvatarApiType);
@@ -543,7 +542,6 @@ class MediaBrowserContainer extends Component {
               />
             )}
             {entries.map((entry, idx) => {
-              console.log({ entry, idx });
               const isAvatar = entry.type === "avatar" || entry.type === "avatar_listing";
               const isScene = entry.type === "scene" || entry.type === "scene_listing";
               const onShowSimilar =

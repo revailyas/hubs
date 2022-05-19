@@ -58,6 +58,7 @@
 <body>
     <div id="support-root"></div>
 
+    <!-- ADD "freeze-controller" if want to freeze network when inspecting -->
     <a-scene
         vr-mode-ui="enabled: false"
         loading-screen="enabled: false"
@@ -70,7 +71,6 @@
         networked-scene="audio: true; debug: true; connectOnLoad: false;"
         mute-mic="eventSrc: a-scene; toggleEvents: action_mute"
         action-to-event__mute="path: /actions/muteMic; event: action_mute;"
-        freeze-controller
         personal-space-bubble="debug: false;"
         rotate-selected-object
     >
