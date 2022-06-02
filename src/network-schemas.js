@@ -2,7 +2,6 @@ function registerNetworkSchemas() {
   const vectorRequiresUpdate = epsilon => {
     return () => {
       let prev = null;
-
       return curr => {
         if (prev === null) {
           prev = new THREE.Vector3(curr.x, curr.y, curr.z);

@@ -126,7 +126,7 @@ AFRAME.registerComponent("name-tag", {
         this.handRaised.visible = this.isHandRaised;
 
         this.neck.getWorldPosition(worldPos);
-        worldPos.setY(this.nametagElPosY + this.ikRoot.position.y);
+        worldPos.setY(this.nametagElPosY + this.ikRoot.position.y + 1.5);
         mat.setPosition(worldPos);
         setMatrixWorld(this.nametag, mat);
       } else {

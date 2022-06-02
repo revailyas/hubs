@@ -36,6 +36,49 @@ export function ObjectMenu({
   onToggleLights,
   lightsEnabled
 }) {
+  // return (
+  //   <>
+  //     <IconButton className={styles.backButton} onClick={onBack}>
+  //       <ChevronBackIcon width={24} height={24} />
+  //     </IconButton>
+  //     <IconButton className={styles.lightsButton} onClick={onToggleLights}>
+  //       {lightsEnabled ? (
+  //         <LightbulbOutlineIcon title="Turn Lights Off" width={24} height={24} />
+  //       ) : (
+  //         <LightbulbIcon title="Turn Lights On" width={24} height={24} />
+  //       )}
+  //     </IconButton>
+  //     <div className={styles.objectMenuContainer}>
+  //       <div className={styles.objectMenu}>
+  //         <div className={styles.header}>
+  //           <IconButton className={styles.closeButton} onClick={onClose}>
+  //             <CloseIcon width={16} height={16} />
+  //           </IconButton>
+  //           <h5>{title}</h5>
+  //           <IconButton className={styles.lightsHeaderButton} onClick={onToggleLights}>
+  //             {lightsEnabled ? (
+  //               <LightbulbOutlineIcon title="Turn Lights Off" width={16} height={16} />
+  //             ) : (
+  //               <LightbulbIcon title="Turn Lights On" width={16} height={16} />
+  //             )}
+  //           </IconButton>
+  //         </div>
+  //         <div className={styles.menu}>{joinChildren(children, () => <div className={styles.separator} />)}</div>
+  //       </div>
+  //       <div className={styles.pagination}>
+  //         <IconButton onClick={onPrevObject}>
+  //           <ArrowBackIcon width={24} height={24} />
+  //         </IconButton>
+  //         <p>
+  //           {currentObjectIndex + 1}/{objectCount}
+  //         </p>
+  //         <IconButton onClick={onNextObject}>
+  //           <ArrowForwardIcon width={24} height={24} />
+  //         </IconButton>
+  //       </div>
+  //     </div>
+  //   </>
+  // );
   return !window.hideInspectUI ? (
     <>
       <IconButton className={styles.backButton} onClick={onBack}>

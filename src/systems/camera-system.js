@@ -9,6 +9,7 @@ const customFOV = qsGet("fov");
 //const enableThirdPersonMode = qsTruthy("thirdPerson");
 //const enableThirdPersonMode = true;
 import { Layers } from "../components/layers";
+import { loadMyAvatar } from "../integrations/avatar";
 
 function getInspectableInHierarchy(el) {
   let inspectable = el;
@@ -143,7 +144,7 @@ const moveRigSoCameraLooksAtPivot = (function() {
     target.quaternion.copy(owq);
     target.matrixNeedsUpdate = true;
     target.updateMatrices();
-    childMatch(rig, camera, target.matrixWorld);
+    //childMatch(rig, camera, target.matrixWorld);
   };
 })();
 
@@ -157,7 +158,7 @@ let tpsCameraHeight = 0.5;
 
 const NEXT_MODES = {
   [CAMERA_MODE_FIRST_PERSON]: CAMERA_MODE_THIRD_PERSON_NEAR,
-  [CAMERA_MODE_THIRD_PERSON_NEAR]: CAMERA_MODE_THIRD_PERSON_FAR,
+  //[CAMERA_MODE_THIRD_PERSON_NEAR]: CAMERA_MODE_THIRD_PERSON_FAR,
   [CAMERA_MODE_THIRD_PERSON_FAR]: CAMERA_MODE_FIRST_PERSON
 };
 
@@ -296,8 +297,8 @@ export class CameraSystem {
     //   camera.layers.disable(Layers.CAMERA_LAYER_FIRST_PERSON_ONLY);
     //   camera.layers.enable(Layers.CAMERA_LAYER_THIRD_PERSON_ONLY);
     // }
-    //camera.layers.disable(Layers.CAMERA_LAYER_FIRST_PERSON_ONLY);
-    //camera.layers.enable(Layers.CAMERA_LAYER_THIRD_PERSON_ONLY);
+    camera.layers.disable(Layers.CAMERA_LAYER_FIRST_PERSON_ONLY);
+    camera.layers.enable(Layers.CAMERA_LAYER_THIRD_PERSON_ONLY);
 
     this.viewingCamera.updateMatrices();
     this.snapshot.matrixWorld.copy(this.viewingRig.object3D.matrixWorld);
@@ -457,7 +458,7 @@ export class CameraSystem {
 
       const cameraZoomRange = this.userinput.get(paths.actions.dCharSpeed);
       if (Math.abs(cameraZoomRange) !== 0) {
-        if (cameraZoomRange < 0 && tpsCameraZoom < 4) {
+        if (cameraZoomRange < 0 && tpsCameraZoom < 10) {
           tpsCameraZoom += 0.5;
           tpsCameraHeight += 0.1;
         } else if (cameraZoomRange > 0 && tpsCameraZoom > 1) {
@@ -483,7 +484,7 @@ export class CameraSystem {
       this.ensureListenerIsParentedCorrectly(scene);
 
       if (this.mode === CAMERA_MODE_FIRST_PERSON) {
-        this.avatarRig.object3D.visible = false;
+        //this.avatarRig.object3D.visible = false;
         this.viewingCameraRotator.on = false;
         this.avatarRig.object3D.updateMatrices();
         setMatrixWorld(this.viewingRig.object3D, this.avatarRig.object3D.matrixWorld);
@@ -497,18 +498,21 @@ export class CameraSystem {
       } else if (this.mode === CAMERA_MODE_THIRD_PERSON_NEAR || this.mode === CAMERA_MODE_THIRD_PERSON_FAR) {
         if (this.mode === CAMERA_MODE_THIRD_PERSON_NEAR) {
           translation.makeTranslation(0, tpsCameraHeight, tpsCameraZoom);
-        } else {
-          translation.makeTranslation(0, 0.5, 4);
         }
+        // else {
+        //   translation.makeTranslation(0, 0.5, 4);
+        // }
         this.avatarRig.object3D.visible = true;
         this.viewingCameraRotator.on = false;
         this.avatarRig.object3D.updateMatrices();
-        setMatrixWorld(this.viewingRig.object3D, this.avatarRig.object3D.matrixWorld);
+        // setMatrixWorld(this.viewingRig.object3D, this.avatarRig.object3D.matrixWorld);
 
         this.avatarPOV.object3D.updateMatrices();
         const newMat = new THREE.Matrix4().copy(this.avatarPOV.object3D.matrixWorld).multiply(translation);
         setMatrixWorld(this.viewingCamera, newMat);
-
+        window.avatarRig = this.avatarRig;
+        window.viewingCamera = this.viewingCamera;
+        window.avatarPOV = this.avatarPOV;
         this.viewingCamera.children.forEach(obj => {
           this.avatarRig.object3D.add(obj);
         });
@@ -522,7 +526,6 @@ export class CameraSystem {
             }
           });
           window.APP.scene.emit("avatar_updated");
-
           window.avatarTPSUpdated = true;
         }
       } else if (this.mode === CAMERA_MODE_INSPECT) {

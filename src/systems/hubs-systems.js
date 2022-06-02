@@ -140,6 +140,8 @@ AFRAME.registerSystem("hubs-systems", {
       ) {
         const moveForwards = child.el.components["networked-avatar"].data.move_forward;
         const moveBackwards = child.el.components["networked-avatar"].data.move_backward;
+        const moveRight = child.el.components["networked-avatar"].data.move_right;
+        const moveLeft = child.el.components["networked-avatar"].data.move_left;
         let mixer, clip, actions, mesh;
         const element = document.getElementById(child.el.id).children[4];
         if (element) {
@@ -150,17 +152,21 @@ AFRAME.registerSystem("hubs-systems", {
             return;
           }
         }
+        const animationSwitcher = (currentName, expectedName) => {
+          if (currentName === expectedName) {
+            return 1;
+          } else {
+            return 0;
+          }
+        };
         const switchToIdle = function() {
           clip = mesh.animations.find(({ name }) => name === "Idle");
-          actions = mixer.clipAction(clip);
-          if (actions) {
+          if (clip) {
+            actions = mixer.clipAction(clip);
             mixer._actions.forEach(item => {
-              if (item._clip.name === "Run") item.weight = 0;
-              if (item._clip.name === "Idle") {
-                item.weight = 1;
-              }
+              item.weight = animationSwitcher(item._clip.name, "Idle");
             });
-            if (window[`lastAnimation${child.el.id}`] === "Run") actions.time = 0;
+            if (window[`lastAnimation${child.el.id}`] !== "Idle") actions.time = 0;
 
             actions.play();
 
@@ -173,8 +179,8 @@ AFRAME.registerSystem("hubs-systems", {
           window[`lastAnimation${child.el.id}`] = "Run";
           //console.log("run" + " " + speed);
           clip = mesh.animations.find(({ name }) => name === "Run");
-          actions = mixer.clipAction(clip);
-          if (actions) {
+          if (clip) {
+            actions = mixer.clipAction(clip);
             actions.weight = 1;
             mixer._actions.forEach(item => {
               if (item._clip.name === "Idle") item.weight = 0;
@@ -188,10 +194,38 @@ AFRAME.registerSystem("hubs-systems", {
             mixer.update(0.001);
           }
         };
+
+        const switchToSideMove = function(speed) {
+          window[`myLastAnimation`] = "Run";
+          // if (speed === 1) {
+          //   mesh.parent.el.setAttribute("networked-avatar", { move_forward: true });
+          // } else if (speed === -1) {
+          //   mesh.parent.el.setAttribute("networked-avatar", { move_backward: true });
+          // }
+          if (!mixer) return;
+          const animationName = speed === 1 ? "Run Right" : "Run Left";
+          clip = mesh.animations.find(({ name }) => name === animationName);
+          if (clip) {
+            actions = mixer.clipAction(clip);
+            actions.weight = 1;
+            mixer._actions.forEach(item => {
+              item.weight = animationSwitcher(item._clip.name, animationName);
+            });
+            actions.play();
+            child.lastMove = new Date();
+            mixer.update(0.001);
+          }
+        };
         try {
-          if (moveForwards || moveBackwards) {
-            const speed = moveForwards ? 1 : -1;
-            switchToRun(speed);
+          if (moveForwards || moveBackwards || moveRight || moveLeft) {
+            let speed = 1;
+            if (moveForwards || moveBackwards) {
+              speed = moveForwards ? 1 : -1;
+              switchToRun(speed);
+            } else {
+              speed = moveRight ? 1 : -1;
+              switchToSideMove(speed);
+            }
           } else {
             if (child.lastMove) {
               const lastMove = child.lastMove;

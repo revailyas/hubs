@@ -1,3 +1,4 @@
+import { THREE } from "aframe";
 import { transportForChannel } from "./transport-for-channel";
 import { authorizeOrSanitizeMessage } from "./utils/permissions-utils";
 
@@ -124,10 +125,12 @@ export default class PhoenixAdapter {
 
   freeze() {
     this.frozen = true;
+    //this.froze = true;
   }
 
   unfreeze() {
     this.frozen = false;
+    //this.froze = false;
     this.flushPendingUpdates();
   }
 
@@ -161,16 +164,31 @@ export default class PhoenixAdapter {
     return this.getPendingData(networkId, this.frozenUpdates.get(networkId));
   }
 
+  // objectMoveHandler(message) {
+  //   if (message && message.data && message.data.hasOwnProperty("d")) {
+  //     message.data.d.forEach(data => {
+  //       if (data.template === "#interactable-media") {
+  //         const elementID = "naf-" + data.networkId;
+  //         const rootElement = document.getElementById(elementID);
+  //         const elementObject = rootElement.object3D;
+  //         elementObject.updateMatrix();
+  //       }
+  //     });
+  //   }
+  // }
+
   handleIncomingNAF = data => {
     const message = authorizeOrSanitizeMessage(data);
     const source = "phx-reliable";
     if (!message.dataType) return;
 
     message.source = source;
-
+    //ON MESSAGE RECEIVED
+    //console.log(message);
     //TODO: Handle frozen
     if (this.frozen) {
-      this.storeMessage(message);
+      //this.storeMessage(message);
+      this.nafMessageReceived(null, message.dataType, message.data, message.source);
     } else {
       this.nafMessageReceived(null, message.dataType, message.data, message.source);
     }

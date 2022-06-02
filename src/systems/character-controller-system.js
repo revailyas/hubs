@@ -311,7 +311,9 @@ export class CharacterControllerSystem {
       this.avatarPOV.object3D.updateMatrices();
       rotateInPlaceAroundWorldUp(this.avatarPOV.object3D.matrixWorld, this.dXZ, snapRotatedPOV);
 
-      newPOV.copy(snapRotatedPOV);
+      //newPOV.copy()
+      if (characterAcceleration && (characterAcceleration[0] === 0 || characterAcceleration[1] === 0))
+        newPOV.copy(snapRotatedPOV);
 
       const navMeshExists = NAV_ZONE in this.scene.systems.nav.pathfinder.zones;
       if (!this.isMotionDisabled) {

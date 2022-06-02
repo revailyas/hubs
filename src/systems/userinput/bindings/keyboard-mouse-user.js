@@ -56,9 +56,9 @@ export const keyboardMouseUserBindings = addSetsToBindings({
     {
       src: {
         w: paths.device.keyboard.key("w"),
-        //a: paths.device.keyboard.key("a"),
-        s: paths.device.keyboard.key("s")
-        //d: paths.device.keyboard.key("d")
+        a: paths.device.keyboard.key("a"),
+        s: paths.device.keyboard.key("s"),
+        d: paths.device.keyboard.key("d")
       },
       dest: { vec2: wasd_vec2 },
       xform: xforms.wasd_to_vec2

@@ -4,7 +4,7 @@ import classNames from "classnames";
 import copy from "copy-to-clipboard";
 import { FormattedMessage } from "react-intl";
 import screenfull from "screenfull";
-
+import "../integrations/ui/MainUI.scss";
 import configs from "../utils/configs";
 import { VR_DEVICE_AVAILABILITY } from "../utils/vr-caps-detect";
 import { canShare } from "../utils/share";
@@ -1126,7 +1126,7 @@ class UIRoot extends Component {
 
     const renderEntryFlow = (!enteredOrWatching && this.props.hub) || this.isWaitingForAutoExit();
 
-    // const canCreateRoom = !configs.feature("disable_room_creation") || configs.isAdmin();
+    const canCreateRoom = !configs.feature("disable_room_creation") || configs.isAdmin();
     // const canCloseRoom = this.props.hubChannel && !!this.props.hubChannel.canOrWillIfCreator("close_hub");
     // const isModerator = this.props.hubChannel && this.props.hubChannel.canOrWillIfCreator("kick_users") && !isMobileVR;
 
@@ -1144,22 +1144,22 @@ class UIRoot extends Component {
         //   />
         // ),
         items: [
-          // this.state.signedIn
-          //   ? {
-          //       id: "sign-out",
-          //       label: <FormattedMessage id="more-menu.sign-out" defaultMessage="Sign Out" />,
-          //       icon: LeaveIcon,
-          //       onClick: async () => {
-          //         await this.props.authChannel.signOut(this.props.hubChannel);
-          //         this.setState({ signedIn: false });
-          //       }
-          //     }
-          //   : {
-          //       id: "sign-in",
-          //       label: <FormattedMessage id="more-menu.sign-in" defaultMessage="Sign In" />,
-          //       icon: EnterIcon,
-          //       onClick: () => this.showContextualSignInDialog()
-          //     },
+          this.state.signedIn
+            ? {
+                id: "sign-out",
+                label: <FormattedMessage id="more-menu.sign-out" defaultMessage="Sign Out" />,
+                icon: LeaveIcon,
+                onClick: async () => {
+                  await this.props.authChannel.signOut(this.props.hubChannel);
+                  this.setState({ signedIn: false });
+                }
+              }
+            : {
+                id: "sign-in",
+                label: <FormattedMessage id="more-menu.sign-in" defaultMessage="Sign In" />,
+                icon: EnterIcon,
+                onClick: () => this.showContextualSignInDialog()
+              },
           // canCreateRoom && {
           //   id: "create-room",
           //   label: <FormattedMessage id="more-menu.create-room" defaultMessage="Create Room" />,

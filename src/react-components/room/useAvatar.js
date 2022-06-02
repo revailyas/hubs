@@ -12,11 +12,14 @@ export default function useAvatar() {
       setState({ hasVideoTextureTarget });
 
       if (window.avatarTPSUpdated && avatarModelEl.object3D.animations.length > 10) {
+        console.log("load my avatar");
         loadMyAvatar();
       }
 
       if (window.avatarTPSUpdated && avatarModelEl.object3D.animations.length < 10) {
+        window.avatarComponent = avatarModelEl;
         setTimeout(() => {
+          console.log("my avatar loaded");
           window.avatarLoaded = true;
           window.APP.store.update({});
           window.APP.store.update({});

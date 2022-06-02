@@ -26,6 +26,7 @@ AFRAME.registerComponent("floaty-object", {
   init() {
     this.onGrab = this.onGrab.bind(this);
     this.onRelease = this.onRelease.bind(this);
+    this.el.object3D.matrixAutoUpdate = true;
   },
 
   tick() {

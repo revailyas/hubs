@@ -53,13 +53,27 @@ AFRAME.registerSystem("idle-detector", {
     const characterAcceleration = userinput.get(CHARACTER_ACCELERATION_PATH);
 
     let clip, actions, mixer;
+    let isAssemblrAvatar = false;
     const element = document.querySelector("#avatar-rig .model");
 
     const mesh = element.object3D;
     const elComponents = mesh.el.components;
     if (elComponents.hasOwnProperty("animation-mixer")) {
       mixer = elComponents["animation-mixer"].mixer;
+
+      const animationList = elComponents["animation-mixer"].animations;
+      animationList.forEach(animation => {
+        if (animation.name === "Run") isAssemblrAvatar = true;
+      });
     }
+
+    const animationSwitcher = (currentName, expectedName) => {
+      if (currentName === expectedName) {
+        return 1;
+      } else {
+        return 0;
+      }
+    };
 
     const switchToIdle = function() {
       //mesh.parent.el.setAttribute("networked-avatar", { move_forward: false, move_backward: false });
@@ -67,15 +81,14 @@ AFRAME.registerSystem("idle-detector", {
       //mesh.parent.el.components["networked-avatar"].data.move_forward = false;
       if (!mixer) return;
       clip = mesh.animations.find(({ name }) => name === "Idle");
-      actions = mixer.clipAction(clip);
-      if (actions) {
+      if (clip) {
+        actions = mixer.clipAction(clip);
         mixer._actions.forEach(item => {
-          if (item._clip.name === "Run") item.weight = 0;
-          if (item._clip.name === "Idle") {
-            item.weight = 1;
-          }
+          // if (item._clip.name === "Run") item.weight = 0;
+          // if (item._clip.name === "Idle") item.weight = 1;
+          item.weight = animationSwitcher(item._clip.name, "Idle");
         });
-        if (window[`myLastAnimation`] === "Run") actions.time = 0;
+        if (window[`myLastAnimation`] !== "Idle") actions.time = 0;
 
         actions.play();
 
@@ -93,15 +106,35 @@ AFRAME.registerSystem("idle-detector", {
       // }
       if (!mixer) return;
       clip = mesh.animations.find(({ name }) => name === "Run");
-      actions = mixer.clipAction(clip);
-      if (actions) {
+      if (clip) {
+        actions = mixer.clipAction(clip);
         actions.weight = 1;
         mixer._actions.forEach(item => {
-          if (item._clip.name === "Idle") item.weight = 0;
+          item.weight = animationSwitcher(item._clip.name, "Run");
           if (item._clip.name === "Run") {
-            item.weight = 1;
             item.timeScale = speed;
           }
+        });
+        actions.play();
+        mixer.update(0.001);
+      }
+    };
+
+    const switchToSideMove = function(speed) {
+      window[`myLastAnimation`] = "Run";
+      // if (speed === 1) {
+      //   mesh.parent.el.setAttribute("networked-avatar", { move_forward: true });
+      // } else if (speed === -1) {
+      //   mesh.parent.el.setAttribute("networked-avatar", { move_backward: true });
+      // }
+      if (!mixer) return;
+      const animationName = speed === 1 ? "Run Right" : "Run Left";
+      clip = mesh.animations.find(({ name }) => name === animationName);
+      if (clip) {
+        actions = mixer.clipAction(clip);
+        actions.weight = 1;
+        mixer._actions.forEach(item => {
+          item.weight = animationSwitcher(item._clip.name, animationName);
         });
         actions.play();
         mixer.update(0.001);
@@ -114,20 +147,22 @@ AFRAME.registerSystem("idle-detector", {
       !!(characterAcceleration && characterAcceleration[1]);
 
     if (active) {
-      if (mesh.animations.length > 3 && mesh.animations.length < 7) {
+      if (mesh.animations.length > 3 && isAssemblrAvatar) {
         if (characterAcceleration[1] > 0) {
           switchToRun(1);
         } else if (characterAcceleration[1] < 0) {
           switchToRun(-1);
         } else if (characterAcceleration[0] > 0) {
           //move right
+          switchToSideMove(1);
         } else if (characterAcceleration[0] < 0) {
           //move left
+          switchToSideMove(-1);
         }
       }
       this.resetTimeout();
     } else {
-      if (mesh.animations.length > 3 && mesh.animations.length < 7) switchToIdle();
+      if (isAssemblrAvatar) switchToIdle();
     }
   },
   remove() {}

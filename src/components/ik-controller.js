@@ -79,8 +79,8 @@ AFRAME.registerComponent("ik-controller", {
     rightEye: { type: "string", default: "RightEye" },
     head: { type: "string", default: "Head" },
     neck: { type: "string", default: "Neck" },
-    leftHand: { type: "string", default: "LeftHand" },
-    rightHand: { type: "string", default: "RightHand" },
+    //leftHand: { type: "string", default: "LeftHand" },
+    //rightHand: { type: "string", default: "RightHand" },
     chest: { type: "string", default: "Spine" },
     rotationSpeed: { default: 8 },
     maxLerpAngle: { default: 90 * THREE.Math.DEG2RAD },
@@ -177,204 +177,6 @@ AFRAME.registerComponent("ik-controller", {
       return;
     }
 
-    // AFRAME.scenes[0].object3D.children.forEach(child => {
-    //   if (child.el && child.el.id.includes("naf-")) {
-    //     const moveForwards = child.el.components["networked-avatar"].previousOldData.move_forward;
-    //     const moveBackwards = child.el.components["networked-avatar"].previousOldData.move_backward;
-    //     let mixer, clip, actions, mesh;
-    //     const element = document.getElementById(child.el.id).children[4];
-    //     if (element) {
-    //       mesh = document.getElementById(child.el.id).children[4].object3D;
-    //       try {
-    //         mixer = document.getElementById(child.el.id).children[4].components["animation-mixer"].mixer;
-    //       } catch (error) {}
-    //     }
-    //     const switchToIdle = function() {
-    //       clip = mesh.animations.find(({ name }) => name === "Idle");
-    //       actions = mixer.clipAction(clip);
-    //       if (actions) {
-    //         mixer._actions.forEach(item => {
-    //           if (item._clip.name === "Run") item.weight = 0;
-    //           if (item._clip.name === "Idle") {
-    //             item.weight = 1;
-    //             item.time = 0;
-    //           }
-    //         });
-    //         actions.time = 0;
-    //         actions.play();
-
-    //         mixer.update(0.001);
-    //       }
-    //     };
-
-    //     const switchToRun = function(speed) {
-    //       //console.log("run" + " " + speed);
-    //       clip = mesh.animations.find(({ name }) => name === "Run");
-    //       actions = mixer.clipAction(clip);
-    //       if (actions) {
-    //         actions.weight = 1;
-    //         mixer._actions.forEach(item => {
-    //           if (item._clip.name === "Idle") item.weight = 0;
-    //           if (item._clip.name === "Run") {
-    //             item.weight = 1;
-    //             item.timeScale = speed;
-    //           }
-    //         });
-    //         actions.play();
-    //         child.lastMove = new Date();
-    //         mixer.update(0.001);
-    //       }
-    //     };
-    //     try {
-    //       if (moveForwards || moveBackwards) {
-    //         const speed = moveForwards ? 1 : -1;
-    //         switchToRun(speed);
-    //       } else {
-    //         if (child.lastMove) {
-    //           const lastMove = child.lastMove;
-    //           const now = new Date();
-    //           const switchHandler = miliSecondDiff(lastMove, now);
-    //           if (switchHandler > 50) {
-    //             switchToIdle();
-    //           }
-    //         } else {
-    //           switchToIdle();
-    //         }
-    //       }
-    //     } catch (error) {
-    //       console.log(error);
-    //     }
-
-    //     // if (!window.APP[child.el.id]) {
-    //     //   window.APP[child.el.id] = {
-    //     //     position: {
-    //     //       x: child.position.x,
-    //     //       y: child.position.y,
-    //     //       z: child.position.z
-    //     //     },
-    //     //     rotation: {
-    //     //       x: child.rotation.x,
-    //     //       y: child.rotation.y,
-    //     //       z: child.rotation.z
-    //     //     }
-    //     //   };
-    //     // } else {
-    //     //   const currentTransform = window.APP[child.el.id];
-    //     //   const element = document.getElementById(child.el.id).children[4];
-    //     //   if (element) {
-    //     //     const mesh = document.getElementById(child.el.id).children[4].object3D;
-
-    //     //     try {
-    //     //       mixer = document.getElementById(child.el.id).children[4].components["animation-mixer"].mixer;
-    //     //     } catch (error) {}
-
-    //     //     const currentRotation = new Vector3(
-    //     //       currentTransform.rotation.x,
-    //     //       currentTransform.rotation.y,
-    //     //       currentTransform.rotation.z
-    //     //     );
-    //     //     const currentPosition = new Vector3(
-    //     //       currentTransform.position.x,
-    //     //       currentTransform.position.y,
-    //     //       currentTransform.position.z
-    //     //     );
-    //     //     const newPos = new Vector3(
-    //     //       child.position.x - currentPosition.x,
-    //     //       child.position.y - currentPosition.y,
-    //     //       child.position.z - currentPosition.z
-    //     //     );
-    //     //     const movement = new Vector3(
-    //     //       currentRotation.x * newPos.x,
-    //     //       currentRotation.y * newPos.y,
-    //     //       currentRotation.z * newPos.z
-    //     //     );
-
-    //     //     let moveForward = false;
-    //     //     //moveBackward = false;
-    //     //     const currentRotationY = child.rotation.y;
-
-    //     //     if (movement.z !== 0) {
-    //     //       moveForward = true;
-    //     //       //console.log(movement.z + " : " + currentRotationY);
-    //     //       //console.log(child.el.components['networked-avatar'])
-
-    //     //     }
-
-    //     //     const currentRotationsX = child.rotation.x;
-    //     //     const currentRotationsY = child.rotation.y;
-    //     //     const currentRotationsZ = child.rotation.z;
-
-    //     //     window.APP[child.el.id] = {
-    //     //       position: {
-    //     //         x: child.position.x,
-    //     //         y: child.position.y,
-    //     //         z: child.position.z
-    //     //       },
-    //     //       rotation: {
-    //     //         x: currentRotationsX,
-    //     //         y: currentRotationsY,
-    //     //         z: currentRotationsZ
-    //     //       }
-    //     //     };
-
-    //     //     const switchToIdle = function() {
-    //     //       clip = mesh.animations.find(({ name }) => name === "Idle");
-    //     //       actions = mixer.clipAction(clip);
-    //     //       if (actions) {
-    //     //         mixer._actions.forEach(item => {
-    //     //           if (item._clip.name === "Run") item.weight = 0;
-    //     //           if (item._clip.name === "Idle") {
-    //     //             item.weight = 1;
-    //     //             item.time = 0;
-    //     //           }
-    //     //         });
-    //     //         actions.time = 0;
-    //     //         actions.play();
-
-    //     //         mixer.update(0.001);
-    //     //       }
-    //     //     };
-
-    //     //     const switchToRun = function(speed) {
-    //     //       clip = mesh.animations.find(({ name }) => name === "Run");
-    //     //       actions = mixer.clipAction(clip);
-    //     //       if (actions) {
-    //     //         actions.weight = 1;
-    //     //         mixer._actions.forEach(item => {
-    //     //           if (item._clip.name === "Idle") item.weight = 0;
-    //     //           if (item._clip.name === "Run") {
-    //     //             item.weight = 1;
-    //     //             item.timeScale = speed;
-    //     //           }
-    //     //         });
-    //     //         actions.play();
-    //     //         child.lastMove = new Date();
-    //     //         mixer.update(0.001);
-    //     //       }
-    //     //     };
-
-    //     //     try {
-    //     //       if (moveForward) {
-    //     //         const speed = moveForward ? 1 : -1;
-    //     //         switchToRun(speed);
-    //     //       } else {
-    //     //         if (child.lastMove) {
-    //     //           const lastMove = child.lastMove;
-    //     //           const now = new Date();
-    //     //           const switchHandler = miliSecondDiff(lastMove, now);
-    //     //           if (switchHandler > 50) {
-    //     //             switchToIdle();
-    //     //           }
-    //     //         } else {
-    //     //           switchToIdle();
-    //     //         }
-    //     //       }
-    //     //     } catch (error) {}
-    //     //   }
-    //     // }
-    //   }
-    // });
-
     const root = this.ikRoot.el.object3D;
     root.updateMatrices();
     const { camera, leftController, rightController } = this.ikRoot;
@@ -404,7 +206,7 @@ AFRAME.registerComponent("ik-controller", {
         cameraForward,
         headTransform,
         invMiddleEyeToHead,
-        invHipsToHeadVector,
+        //invHipsToHeadVector,
         flipY,
         cameraYRotation,
         cameraYQuaternion,
@@ -426,7 +228,7 @@ AFRAME.registerComponent("ik-controller", {
       // hips will use vertex skinning to do the root displacement, which results in
       // frustum culling errors since three.js does not take into account skinning when
       // computing frustum culling sphere bounds.
-      avatar.position.setFromMatrixPosition(headTransform).add(invHipsToHeadVector);
+      //avatar.position.setFromMatrixPosition(headTransform).add(invHipsToHeadVector);
       avatar.matrixNeedsUpdate = true;
 
       // Animate the hip rotation to follow the Y rotation of the camera with some damping.
@@ -470,23 +272,16 @@ AFRAME.registerComponent("ik-controller", {
       head.matrixNeedsUpdate = true;
       chest.matrixNeedsUpdate = true;
 
-      if (
-        avatar.parent.animations.length === 6 ||
-        avatar.parent.animations.length === 7 ||
-        avatar.parent.animations.length === 5
-      ) {
-        //const box = new THREE.Box3().setFromObject(head.children[0].children[0]);
-
+      if (avatar.parent.animations.find(x => x.name === "Run")) {
         head.rotation.x = 0;
         head.rotation.z = 0;
-        head.position.y = -0.2;
-        //head.position.y = box.max.y * -1;
+        //head.position.y = -0.2;
 
-        window.invRootToChest = invRootToChest;
-        window.rootToChest = rootToChest;
-        window.root = root;
-        window.head = head;
-        window.avatar = avatar;
+        //head.position.y = window.headPosition ? window.headPosition : -0.1;
+        head.position.y = 1.32;
+        //if (avatar.parent.animations.find(x => x.name === "Run Right")) head.position.y = -0.1;
+        //head.position.y = 2.35;
+        console.log();
       }
     }
 

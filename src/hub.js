@@ -25,7 +25,6 @@ import loadingEnvironment from "./assets/models/LoadingEnvironment.glb";
 
 import "aframe";
 import "./utils/aframe-overrides";
-import executeOnetime from "./integrations/functions/executeOnetime.js";
 
 // A-Frame hardcodes THREE.Cache.enabled = true
 // But we don't want to use THREE.Cache because
