@@ -424,6 +424,9 @@ AFRAME.registerComponent("pen", {
   },
 
   _setPenVisible(visible) {
+    //SET CAMERA TO FIRST PERSON WHEN DRAWING
+    window.isDrawing = !visible;
+
     if (this.el.parentEl.object3DMap.mesh && this.el.parentEl.object3DMap.mesh.visible !== visible) {
       this.el.parentEl.object3DMap.mesh.visible = visible;
     }

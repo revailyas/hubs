@@ -22,7 +22,6 @@ import { WaypointSystem } from "./waypoint-system";
 import { CharacterControllerSystem } from "./character-controller-system";
 import { waitForDOMContentLoaded } from "../utils/async-utils";
 import { CursorPoseTrackingSystem } from "./cursor-pose-tracking";
-import { ScaleInScreenSpaceSystem } from "./scale-in-screen-space";
 import { MenuAnimationSystem } from "./menu-animation-system";
 import { AudioSettingsSystem } from "./audio-settings-system";
 import { AudioSystem } from "./audio-system";
@@ -67,7 +66,6 @@ AFRAME.registerSystem("hubs-systems", {
     this.characterController = new CharacterControllerSystem(this.el);
     this.waypointSystem = new WaypointSystem(this.el, this.characterController);
     this.cursorPoseTrackingSystem = new CursorPoseTrackingSystem();
-    this.scaleInScreenSpaceSystem = new ScaleInScreenSpaceSystem();
     this.menuAnimationSystem = new MenuAnimationSystem();
     this.audioSettingsSystem = new AudioSettingsSystem(this.el);
     this.animationMixerSystem = new AnimationMixerSystem();
@@ -101,7 +99,6 @@ AFRAME.registerSystem("hubs-systems", {
     this.cursorTargettingSystem.tick(t);
     this.hoverMenuSystem.tick();
     this.positionAtBorderSystem.tick();
-    this.scaleInScreenSpaceSystem.tick();
     this.constraintsSystem.tick();
     this.twoPointStretchingSystem.tick();
     this.singleActionButtonSystem.tick();
@@ -203,19 +200,48 @@ AFRAME.registerSystem("hubs-systems", {
           //   mesh.parent.el.setAttribute("networked-avatar", { move_backward: true });
           // }
           if (!mixer) return;
-          const animationName = speed === 1 ? "Run Right" : "Run Left";
+          const animationName = "Run Right";
           clip = mesh.animations.find(({ name }) => name === animationName);
           if (clip) {
             actions = mixer.clipAction(clip);
             actions.weight = 1;
             mixer._actions.forEach(item => {
               item.weight = animationSwitcher(item._clip.name, animationName);
+              if (item._clip.name === "Run Right") {
+                item.weight = 1;
+                item.timeScale = speed;
+              }
             });
             actions.play();
             child.lastMove = new Date();
             mixer.update(0.001);
           }
         };
+
+        const switchToRunAndSide = function(speed1, speed2) {
+          window[`myLastAnimation`] = "Run";
+          if (!mixer) return;
+          mixer._actions.forEach(item => {
+            item.weight = 0;
+            item.timeScale = 0;
+          });
+          const clip1 = mesh.animations.find(({ name }) => name === "Run");
+          const clip2 = mesh.animations.find(({ name }) => name === "Run Right");
+          if (clip1 && clip2) {
+            const action1 = mixer.clipAction(clip1);
+            action1.weight = 1;
+            action1.timeScale = speed1;
+            action1.play();
+            const action2 = mixer.clipAction(clip2);
+            action2.weight = 1;
+            action2.timeScale = speed2;
+            action2.play();
+
+            mixer.update(0.001);
+            console.log(action1.timeScale + " " + action2.timeScale);
+          }
+        };
+
         try {
           if (moveForwards || moveBackwards || moveRight || moveLeft) {
             let speed = 1;
@@ -226,6 +252,27 @@ AFRAME.registerSystem("hubs-systems", {
               speed = moveRight ? 1 : -1;
               switchToSideMove(speed);
             }
+
+            let isMovingStraight, isMovingSide, straightSpeed, sideSpeed;
+
+            if (moveForwards || moveBackwards) {
+              isMovingStraight = true;
+              straightSpeed = moveForwards ? 1 : -1;
+            }
+
+            if (moveLeft || moveRight) {
+              isMovingSide = true;
+              sideSpeed = moveRight ? 1 : -1;
+            }
+            if (isMovingStraight && isMovingSide) {
+              switchToRunAndSide(straightSpeed, sideSpeed);
+            } else if (isMovingStraight) {
+              switchToRun(straightSpeed);
+            } else if (isMovingSide) {
+              switchToSideMove(sideSpeed);
+            }
+
+            if (!isMovingStraight && !isMovingSide) switchToIdle();
           } else {
             if (child.lastMove) {
               const lastMove = child.lastMove;
