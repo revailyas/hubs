@@ -2,7 +2,7 @@ import { THREE } from "aframe";
 import { transportForChannel } from "./transport-for-channel";
 import { authorizeOrSanitizeMessage } from "./utils/permissions-utils";
 
-// TODO: Use the websocket connection, not HEAD requests
+// // TODO: Use the websocket connection, not HEAD requests
 const getTimeOffsetToServer = async () => {
   const precision = 1000;
   const clientSentTime = Date.now();
@@ -181,7 +181,7 @@ export default class PhoenixAdapter {
     const message = authorizeOrSanitizeMessage(data);
     const source = "phx-reliable";
     if (!message.dataType) return;
-
+    console.log({ message });
     message.source = source;
     //ON MESSAGE RECEIVED
     //console.log(message);
@@ -197,6 +197,7 @@ export default class PhoenixAdapter {
     // Server optimization: server passes through unparsed NAF message, we must now parse it.
     const data = JSON.parse(unparsedData);
     data.from_session_id = from_session_id;
+    console.log({ data });
     this.handleIncomingNAF(data);
   };
 
@@ -224,7 +225,7 @@ export default class PhoenixAdapter {
       const storedData =
         storedMessage.dataType === "um" ? this.dataForUpdateMultiMessage(networkId, storedMessage) : storedMessage.data;
 
-      // Avoid updating components if the entity data received did not come from the current owner.
+      // Avoid updating components if the entity data received did not come from the current.
       const isOutdatedMessage = data.lastOwnerTime < storedData.lastOwnerTime;
       const isContemporaneousMessage = data.lastOwnerTime === storedData.lastOwnerTime;
       if (isOutdatedMessage || (isContemporaneousMessage && storedData.owner > data.owner)) {

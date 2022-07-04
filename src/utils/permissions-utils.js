@@ -122,13 +122,14 @@ function getPendingOrExistingEntityMetadata(networkId) {
 
   const entity = NAF.entities.getEntity(networkId);
   if (!entity) return null;
-
+  if (!entity.components.networked.data) return;
   const { template, creator } = entity.components.networked.data;
   const isPinned = entity.components.pinnable && entity.components.pinnable.data.pinned;
   return { template, creator, isPinned };
 }
 
 function authorizeOrSanitizeMessageData(data, sender, senderPermissions) {
+  console.log(data);
   const entityMetadata = getPendingOrExistingEntityMetadata(data.networkId);
   if (!entityMetadata) return false;
 

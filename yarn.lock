@@ -3087,11 +3087,6 @@
   "resolved" "https://registry.npmjs.org/@mozillareality/easing-functions/-/easing-functions-0.1.1.tgz"
   "version" "0.1.1"
 
-"@mozillareality/three-batch-manager@github:mozillareality/three-batch-manager#master":
-  "integrity" "sha512-jD6wj7blQmvgft6mKNpeSID9UbCyh6txdRktt3fjnwE8WcZyEdskDMMX8nugbdysU2SiVkf4PqCLJ8yHaVpqUA=="
-  "resolved" "git+ssh://git@github.com/mozillareality/three-batch-manager.git#0696524807536840eba156e84feef78e83fb297a"
-  "version" "0.1.10"
-
 "@mrmlnc/readdir-enhanced@^2.2.1":
   "integrity" "sha512-bPHp6Ji8b41szTOcaP63VlnbbO5Ny6dwAATtY6JTjh5N2OLrb5Qk/Th5cRkRQhkWCt+EJsYrNB0MiL+Gpn6e3g=="
   "resolved" "https://registry.npmjs.org/@mrmlnc/readdir-enhanced/-/readdir-enhanced-2.2.1.tgz"
@@ -5924,14 +5919,9 @@
     "ieee754" "^1.1.4"
     "isarray" "^1.0.0"
 
-"buffered-interpolation@github:Infinitelee/buffered-interpolation":
+"buffered-interpolation@github:Infinitelee/buffered-interpolation", "buffered-interpolation@github:Infinitelee/buffered-interpolation#5bb18421ebf2bf11664645cdc7a15bd77ee2156b":
   "integrity" "sha512-ntAQLQCGDciBtr5OCv32eT5Bx2yEohcww7bOJClDWJjcbU0jzOecDoLq83F2WzPCpcY7yup6dbTGTGgGBg0Eug=="
   "resolved" "git+ssh://git@github.com/Infinitelee/buffered-interpolation.git#5bb18421ebf2bf11664645cdc7a15bd77ee2156b"
-  "version" "0.2.5"
-
-"buffered-interpolation@github:Infinitelee/buffered-interpolation#5bb18421ebf2bf11664645cdc7a15bd77ee2156b":
-  "integrity" "sha512-ntAQLQCGDciBtr5OCv32eT5Bx2yEohcww7bOJClDWJjcbU0jzOecDoLq83F2WzPCpcY7yup6dbTGTGgGBg0Eug=="
-  "resolved" "git+ssh://git@github.com/infinitelee/buffered-interpolation.git#5bb18421ebf2bf11664645cdc7a15bd77ee2156b"
   "version" "0.2.5"
 
 "builtin-modules@^1.0.0":
@@ -12923,7 +12913,7 @@
   "resolved" "https://registry.npmjs.org/nested-error-stacks/-/nested-error-stacks-2.1.0.tgz"
   "version" "2.1.0"
 
-"networked-aframe@github:mozillareality/networked-aframe#master":
+"networked-aframe@github:mozillareality/networked-aframe#50184f495ff1f77d0e6fe3777d73092784e3aee3":
   "integrity" "sha512-nFcJlOBpq50MSlFSzNw0Jb/e33UGsYuqwMZATDrr3Xic4cP7nxpHn6v4o0XRnHRbxjU1iiR+pTUTBYhM8Qmgpg=="
   "resolved" "git+ssh://git@github.com/mozillareality/networked-aframe.git#50184f495ff1f77d0e6fe3777d73092784e3aee3"
   "version" "0.6.1"
@@ -17337,7 +17327,7 @@
   "resolved" "git+ssh://git@github.com/infinitelee/three-to-ammo.git#9e68a3bbe500988f2dc0096f78c12dabbdaf5548"
   "version" "1.0.0"
 
-"three@*", "three@^0.111.0", "three@^0.128.0", "three@>= 0.123.0", "three@>=0.103.0", "three@0.x.x", "three@github:mozillareality/three.js#hubs-patches-133":
+"three@*", "three@^0.128.0", "three@>= 0.123.0", "three@>=0.103.0", "three@0.x.x", "three@github:mozillareality/three.js#hubs-patches-133":
   "integrity" "sha512-1bjWV2eKkITn7t9ll5DLM69n6lXzCDn6MH5qOc9smv0hWRA5DK1UdWKOM0a8JZmILNYyakuxvedUTllFSXfNtQ=="
   "resolved" "git+ssh://git@github.com/mozillareality/three.js.git#b907b3c1cab8b416ef63b290aa603b540dd881b8"
   "version" "0.133.1"

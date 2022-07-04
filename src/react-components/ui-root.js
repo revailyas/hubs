@@ -639,7 +639,7 @@ class UIRoot extends Component {
     }
 
     // console.log("set user avatar");
-    // loadMyAvatar();
+    loadMyAvatar();
   };
 
   attemptLink = async () => {

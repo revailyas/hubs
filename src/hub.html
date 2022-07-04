@@ -12,10 +12,6 @@
     <link rel="manifest" href="/manifest.webmanifest">
     <!-- iOS (for "Add to Homescreen") -->
     <meta name="mobile-web-app-capable" content="yes">
-
-    <!-- <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; "> -->
-    <!-- <meta http-equiv="Content-Security-Policy" content="script-src 'self' assemblr-1ff3f.firebaseio.com;"> -->
-
     <title>Room | App by Company</title>
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet"> 
@@ -58,7 +54,6 @@
 <body>
     <div id="support-root"></div>
 
-    <!-- ADD "freeze-controller" if want to freeze network when inspecting -->
     <a-scene
         hubs-systems
         capture-system
@@ -68,9 +63,9 @@
         networked-scene="audio: true; debug: true; connectOnLoad: false;"
         mute-mic="eventSrc: a-scene; toggleEvents: action_mute"
         action-to-event__mute="path: /actions/muteMic; event: action_mute;"
+        freeze-controller
         personal-space-bubble="debug: false;"
         rotate-selected-object
-        freeze-controller
     >
         <a-assets>
             <!-- Note our fork of aframe doesn't actually do any preloading with a-assets. These a-asset-items are only used for their src attribute. -->
@@ -154,7 +149,7 @@
                             </a-entity>
                         </template>
 
-                        <!-- <template data-name="Spine">
+                        <template data-name="Spine">
                             <a-entity is-remote-hover-target personal-space-invader="radius: 0.2; useMaterial: true;" bone-visibility>
                                 <a-entity class="avatar-inspect-collider" avatar-inspect-collider tags="togglesHoveredActionSet: true; ignoreSpaceBubble: true;" is-remote-hover-target inspect-button></a-entity>
                                 <a-entity class="chest-image" scale="0.18 0.18 0.18" position="0 -0.025 0.13"></a-entity>
@@ -197,7 +192,7 @@
                                     </a-entity>
                                 </a-entity>
                             </a-entity>
-                        </template> -->
+                        </template>
 
                         <template data-name="Head">
                             <a-entity
@@ -1007,9 +1002,6 @@
             ></a-mixin>
         </a-assets>
 
-        <!-- HACK - We use this object to trigger initial batch preparation -->
-        <a-entity id="batch-prep" visible="false"></a-entity>
-
         <!-- Interactables -->
         <a-entity id="media-counter" networked-counter="max: 20;"></a-entity>
 
@@ -1212,11 +1204,11 @@
                     ></a-entity>
                 </template>
 
-                <!-- <template data-name="Spine">
+                <template data-name="Spine">
                     <a-entity>
                         <a-entity class="chest-image" scale="0.18 0.18 0.18" position="0 -0.025 0.13"></a-entity>
                     </a-entity>
-                </template> -->
+                </template>
 
                 <template data-name="LeftHand">
                     <a-entity bone-visibility="updateWhileInvisible: true;" hover-visuals="hand: left;"></a-entity>
